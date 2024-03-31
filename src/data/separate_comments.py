@@ -21,8 +21,16 @@ def main():
             sep = ';', 
             encoding='utf-8-sig'
             )
-        data_filtered = data.drop_duplicates(subset=['Texts'])
-        data_filtered.to_csv(path_processed_data + f'train_r3_{corpus}_filtered.csv')
+        
+        # Separa os textos em linhas individuais
+        df_sep_comments = data.assign(Texts=data['Texts'].str.split(' # ')).explode('Texts')
+
+        # Reindexa o DataFrame resultante
+        df_sep_comments.reset_index(drop=True, inplace = True)
+
+        df_sep_comments.ffill(inplace = True)
+        
+        df_sep_comments.to_csv(path_processed_data + f'train_r3_{corpus}_separated_comments.csv', index = False)
     
 if __name__ == "__main__":
     main()
