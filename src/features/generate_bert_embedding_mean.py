@@ -5,14 +5,15 @@ import numpy as np
 import datetime
 from tqdm import tqdm
 from transformers import set_seed
+import os
+import gc
 set_seed(42)
 
 ################ Data Paths ################################
 path_raw_data = 'data/raw/'
 path_processed_data = 'data/processed/'
-
-
-DATA_INPUT_PATH = path_processed_data + 'data_filtered_separated.csv'
+path_interim_data = 'data/interim/'
+check_if_file_exists = False
 ############################################################
 
 MAX_LENGTH_TOKENS = 512
@@ -28,8 +29,8 @@ def bert_text_preparation(text, tokenizer):
     indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
     segments_ids = [1]*len(indexed_tokens)
 
-    tokens_tensor = torch.tensor([indexed_tokens])
-    segments_tensors = torch.tensor([segments_ids])
+    tokens_tensor = torch.tensor([indexed_tokens]).to('cuda')
+    segments_tensors = torch.tensor([segments_ids]).to('cuda')
 
     return tokenized_text, tokens_tensor, segments_tensors
 
@@ -46,32 +47,75 @@ def get_bert_embeddings(tokens_tensor, segments_tensors, model):
 
 def main():
     
-    for model_size in ['base']:
+    for model_name in [
+        f'neuralmind/bert-base-portuguese-cased'
+        ]:
         
-        # Import models
-        tokenizer = AutoTokenizer.from_pretrained(f'neuralmind/bert-{model_size}-portuguese-cased', do_lower_case=False)
-        model = BertModel.from_pretrained(f'neuralmind/bert-{model_size}-portuguese-cased', output_hidden_states=True)
+            
+        list_corpus = ['ig','bo', 'cl', 'co', 'gl', 'lu']
+        
+        for i, corpus in enumerate(list_corpus):
+            
+            print(f'###### START {corpus} ({i + 1} of {len(list_corpus)}) ######')
+            
+            path_output_base = path_interim_data + f'train_r3_{corpus}_separated_comments_{model_name.replace("/", "_")}'
+        
+            # Import models
+            tokenizer = AutoTokenizer.from_pretrained(model_name, do_lower_case=True)
+            model = BertModel.from_pretrained(model_name, output_hidden_states=True).to('cuda')
+            
+            # Get data
+            data = pd.read_csv(path_processed_data + f'train_r3_{corpus}_separated_comments.csv')
+            data_bert = data.copy()
+            
+            # Split data into 10 parts
+            data_parts = np.array_split(data_bert, 10)
 
-        # Get data
-        data = pd.read_csv(DATA_INPUT_PATH, index_col = 0)
-        data_bert = data.copy()
+            emb_list = []
+            print(f'Running {model_name}. Datetime start: {datetime.datetime.today()}')
+            for part_idx, part_data in enumerate(data_parts):
+                output_file = f'{path_output_base}_part_{part_idx+1}.parquet'
+                if check_if_file_exists and os.path.exists(output_file):
+                    print(f'Skipping part {part_idx+1} as it already exists.')
+                    continue
+                
+                print(f'Processing part {part_idx+1} of {len(data_parts)}')
+                part_emb_list = []
+                for i, row in tqdm(part_data.iterrows(), total=len(part_data)):
+                    text = row['Texts']
+                    tokenized_text, tokens_tensor, segments_tensors = bert_text_preparation(text, tokenizer)
+                    list_token_embeddings = get_bert_embeddings(tokens_tensor, segments_tensors, model)
 
-        emb_list = []
-        print(f'Running neuralmind/bert-{model_size}-portuguese-cased. Datetime start: {datetime.datetime.today()}')
-        for i, row in tqdm(data_bert.iterrows(), total = len(data_bert)):
-            text = row['comment']
-            tokenized_text, tokens_tensor, segments_tensors = bert_text_preparation(text, tokenizer)
-            list_token_embeddings = get_bert_embeddings(tokens_tensor, segments_tensors, model)
+                    bert_emb = np.array(list_token_embeddings).mean(axis=0)
+                    bert_emb = np.concatenate([row, bert_emb])
+                    part_emb_list.append(bert_emb)
 
-            bert_emb = np.array(list_token_embeddings).mean(axis=0)
-            bert_emb = np.concatenate([row, bert_emb])
-            emb_list.append(bert_emb)
+                columns = np.concatenate([part_data.columns, [f"emb_{i + 1}" for i in range(len(part_emb_list[0]) - data.shape[1])]])
+                df_bert = pd.DataFrame(part_emb_list, columns=columns)
+                df_bert.to_parquet(output_file, index=False)
 
-        print(f'End of Embedding. Datetime: {datetime.datetime.today()}')
+                # Liberando memória
+                del part_emb_list
+                del part_data
+                del df_bert
+                gc.collect()
+                
+            print(f'End of Embedding. Datetime: {datetime.datetime.today()}')
+                
+                
+            print(f'Concating final df. Datetime start: {datetime.datetime.today()}')
+            lista_df_parts = []
+            for part_idx in tqdm(range(10)):
+                
+                output_file = f'{path_output_base}_part_{part_idx+1}.parquet'
+                
+                lista_df_parts.append(pd.read_parquet(output_file))
+            df_final = pd.concat(lista_df_parts)
+            print(f'Concating final df. Datetime end: {datetime.datetime.today()}')
+            
+            df_final.to_parquet(path_processed_data + f'train_r3_{corpus}_separated_comments_{model_name.replace("/", "_")}.parquet')
 
-        columns = np.concatenate([data_bert.columns, [f"emb_{i + 1}" for i in range(len(emb_list[0]) - data.shape[1])]])
-        df_bert = pd.DataFrame(emb_list, columns=columns)
-        df_bert.to_parquet(path_processed_data + f'data_bert-{model_size}-portuguese-cased_mean__max_lenght={MAX_LENGTH_TOKENS}.parquet', index=False)
+            
 
 if __name__ == "__main__":
     main()
