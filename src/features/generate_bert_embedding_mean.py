@@ -13,7 +13,7 @@ set_seed(42)
 path_raw_data = 'data/raw/'
 path_processed_data = 'data/processed/'
 path_interim_data = 'data/interim/'
-check_if_file_exists = False
+check_if_file_exists = True
 ############################################################
 
 MAX_LENGTH_TOKENS = 512
@@ -101,21 +101,6 @@ def main():
                 gc.collect()
                 
             print(f'End of Embedding. Datetime: {datetime.datetime.today()}')
-                
-                
-            print(f'Concating final df. Datetime start: {datetime.datetime.today()}')
-            lista_df_parts = []
-            for part_idx in tqdm(range(10)):
-                
-                output_file = f'{path_output_base}_part_{part_idx+1}.parquet'
-                
-                lista_df_parts.append(pd.read_parquet(output_file))
-            df_final = pd.concat(lista_df_parts)
-            print(f'Concating final df. Datetime end: {datetime.datetime.today()}')
             
-            df_final.to_parquet(path_processed_data + f'train_r3_{corpus}_separated_comments_{model_name.replace("/", "_")}.parquet')
-
-            
-
 if __name__ == "__main__":
     main()
