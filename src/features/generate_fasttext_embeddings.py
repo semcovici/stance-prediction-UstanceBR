@@ -32,7 +32,7 @@ check_if_file_exists = False
 
 ##########################
 # Aux Functions 
-##########################
+##########################0.371501
 def get_mean_embeddings(row):
         
     # tokenize

@@ -8,6 +8,7 @@ class ClassificationPipeline:
         estimator,
         vectorizer = None,
         sampling = None, 
+        selection = None,
         scaling = None
         ) -> None:
         
@@ -15,6 +16,7 @@ class ClassificationPipeline:
             ('vectorizer', vectorizer),
             ('sampling', sampling),
             ('scaling', scaling),
+            ('selection', selection),
             ('estimator',estimator)
         ]
         
