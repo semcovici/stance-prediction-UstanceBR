@@ -2,87 +2,89 @@ from transformers import AutoTokenizer, BertModel
 import torch
 import pandas as pd
 import numpy as np
-import datetime
+from datetime import datetime
 from tqdm import tqdm
 from transformers import set_seed
+from itertools import product
 set_seed(42)
+
+from bert_embedding_methods import *
 
 ################ Data Paths ################################
 path_raw_data = 'data/raw/'
 path_processed_data = 'data/processed/'
-corpus = 'ig'
 ############################################################
 
-MAX_LENGTH_TOKENS = 512
-
-
-################ Aux Functions #############################
-"""
-ref: https://towardsdatascience.com/3-types-of-contextualized-word-embeddings-from-bert-using-transfer-learning-81fcefe3fe6d
-"""
-def bert_text_preparation(text, tokenizer):
-    marked_text = "[CLS] " + text + " [SEP]"
-    tokenized_text = tokenizer.tokenize(marked_text, truncation=True, max_length=MAX_LENGTH_TOKENS, padding = True)
-    indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-    segments_ids = [1]*len(indexed_tokens)
-
-    tokens_tensor = torch.tensor([indexed_tokens])
-    segments_tensors = torch.tensor([segments_ids])
-
-    return tokenized_text, tokens_tensor, segments_tensors
-
-def get_bert_embeddings(tokens_tensor, segments_tensors, model):
-    with torch.no_grad():
-        outputs = model(tokens_tensor, segments_tensors)
-        hidden_states = outputs[2][1:]
-
-    token_embeddings = hidden_states[-1]
-    token_embeddings = torch.squeeze(token_embeddings, dim=0)
-    list_token_embeddings = [token_embed.tolist() for token_embed in token_embeddings]
-
-    return list_token_embeddings
+################ Options for generation ####################
+model_names = [
+    #'neuralmind/bert-large-portuguese-cased', 
+    'neuralmind/bert-base-portuguese-cased'
+    ]
+list_target = [
+    'ig', 
+    'bo', 
+    'cl', 
+    'co', 
+    'gl', 
+    'lu'
+    ]
+list_splits = [
+    #'train', 
+    'test'
+    ]
+list_datasets = [
+    'top_mentioned_timelines',
+    #'users'
+]
+############################################################
 
 def main():
     
-    for model_name in [
-        f'neuralmind/bert-base-portuguese-cased'
-        ]:
+    # iterate for the options
+    for model_name, target, split, dataset in product(model_names, list_target, list_splits, list_datasets):
         
-        # Import models
-        tokenizer = AutoTokenizer.from_pretrained(model_name, do_lower_case=True)
-        model = BertModel.from_pretrained(model_name, output_hidden_states=True)
-
-        list_corpus = [
-            #'ig',
-            'bo', 
-            'cl', 'co', 'gl', 'lu']
+        print(f'##### START PROCESS - {datetime.today()} #####')
+        print(f'''
+Configuration:
+    - model_name: {model_name}
+    - target: {target}
+    - split: {split}
+    - dataset: {dataset}
+              ''')
         
-        for i, corpus in enumerate(list_corpus):
-
-            # Get data
-            data = pd.read_csv(
-                path_raw_data + f'train_r3_{corpus}_top_mentioned_timelines.csv', 
-                sep = ';', 
-                encoding='utf-8-sig'
-                )
-            data_bert = data.copy()#[:10]
-
-            emb_list = []
-            print(f'Running {model_name}. Datetime start: {datetime.datetime.today()}')
-            for i, row in tqdm(data_bert.iterrows(), total = len(data_bert)):
-                text = row['Texts']
-                tokenized_text, tokens_tensor, segments_tensors = bert_text_preparation(text, tokenizer)
-                list_token_embeddings = get_bert_embeddings(tokens_tensor, segments_tensors, model)
-
-                bert_emb = np.array(list_token_embeddings).mean(axis=0)
-                bert_emb = np.concatenate([row, bert_emb])
-                emb_list.append(bert_emb)
-
-            print(f'End of Embedding. Datetime: {datetime.datetime.today()}')
-
-            columns = np.concatenate([data_bert.columns, [f"emb_{i + 1}" for i in range(len(emb_list[0]) - data.shape[1])]])
-            df_bert = pd.DataFrame(emb_list, columns=columns)
-            df_bert.to_parquet(path_processed_data + f'train_r3_{corpus}_{model_name.replace("/", "_")}.parquet', index=False)
-
+        if dataset == 'top_mentioned_timelines':
+            path_data_input = path_raw_data + f'{split}_r3_{target}_top_mentioned_timelines.csv'
+            path_data_output = path_processed_data + f'{split}_r3_{target}_top_mentioned_timelines_{model_name.replace("/", "_")}.parquet'
+            texts_cols = ['Texts']
+        if dataset == 'users':
+            path_data_input = path_raw_data + f'r3_{target}_{split}_users.csv'
+            path_data_output = path_processed_data + f'r3_{target}_{split}_users_{model_name.replace("/", "_")}.parquet'
+            texts_cols = ['Timeline', 'Stance']
+        
+        # Get data
+        data = pd.read_csv(
+            path_data_input, 
+            sep = ';', 
+            encoding='utf-8-sig'
+            )
+        
+        for col in texts_cols:
+        
+            print(f'Running BERT Embedding on {col} column')
+            
+            emb_list = create_bert_embeddings_mean_from_series(
+                model_name = model_name,
+                text_series = data[col]
+            )
+            
+            columns = [f"{col}_emb_{i + 1}" for i in range(emb_list.shape[1])]
+            df_emb = pd.DataFrame(emb_list, columns=columns)
+        
+            data = pd.concat([data, df_emb], axis = 1)
+        
+        data.to_parquet(path_data_output, index=False)   
+        
+        print(f'##### END PROCESS - {datetime.today()} ##### \n\n\n')       
+              
 if __name__ == "__main__":
     main()
