@@ -2,6 +2,7 @@
 *.csv
 *.xlsx
 *.part
+*.npy
 
 stance-prediction-unstancebr
 
