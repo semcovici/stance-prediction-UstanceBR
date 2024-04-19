@@ -8,6 +8,7 @@ from transformers import set_seed
 import os
 import gc
 set_seed(42)
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 """
 ref: https://towardsdatascience.com/3-types-of-contextualized-word-embeddings-from-bert-using-transfer-learning-81fcefe3fe6d
@@ -40,7 +41,8 @@ def get_bert_embeddings(tokens_tensor, segments_tensors, model):
 
 def create_bert_embeddings_mean_from_series(
     model_name,
-    text_series
+    text_series, 
+    progress_bar = True
 ):
     # Import hugginface models
     tokenizer = AutoTokenizer.from_pretrained(model_name, do_lower_case=True)
@@ -50,8 +52,9 @@ def create_bert_embeddings_mean_from_series(
     # allocate array with the necessary shape
     emb_list = np.empty((len(text_series), emb_len))
     
-    print(f'Running {model_name}. Datetime start: {datetime.today()}')
-    for i, text in tqdm(enumerate(text_series), total = len(text_series)):
+    if progress_bar:
+        print(f'Running {model_name}. Datetime start: {datetime.today()}')
+    for i, text in tqdm(enumerate(text_series), total = len(text_series), disable= not progress_bar):
 
         # pre process data
         tokenized_text, tokens_tensor, segments_tensors = bert_text_preparation(text, tokenizer)
@@ -64,7 +67,8 @@ def create_bert_embeddings_mean_from_series(
         
         emb_list[i] = bert_emb
 
-    print(f'End of Embedding. Datetime: {datetime.today()}')
+    if progress_bar:
+        print(f'End of Embedding. Datetime: {datetime.today()}')
     
     return emb_list
 
