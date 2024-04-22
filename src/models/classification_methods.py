@@ -12,6 +12,7 @@ from tqdm import tqdm
 import nltk
 from imblearn.pipeline import Pipeline as IMBPipeline
 import gc
+import re
 from sklearn.compose import ColumnTransformer
 from datetime import datetime
 from sklearn.dummy import DummyClassifier
@@ -61,8 +62,18 @@ def generate_results(data_tuples_list, corpus_name, X_col, clf, reports_path, es
         data_tuples=data_tuples_list,
         X_cols=X_col,
     )
+    
+    match = re.search(r'(\w+)_emb', X_col[0])
+    
+    if match is None:
 
-    str_cols = "emb" if "emb" in X_col[0] else "_".join(X_col)
+        str_cols = "_".join(X_col)
+        
+    else: 
+        
+        str_cols = match.group(1)
+        
+        
 
     cr_path = f"{reports_path}classification_reports/{estimator_name}_{corpus_name}_{str_cols}_classification_report.csv"
     test_results_path = f"{reports_path}test_results/{estimator_name}_{corpus_name}_{str_cols}_test_results.csv"
@@ -71,7 +82,6 @@ def generate_results(data_tuples_list, corpus_name, X_col, clf, reports_path, es
     df_test_results.to_csv(test_results_path)
 
     return df_cr, df_test_results
-
 
 def process_classification(
         estimator,

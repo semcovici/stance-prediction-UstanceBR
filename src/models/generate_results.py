@@ -84,7 +84,7 @@ clf_to_test = {
         'scaling': MaxAbsScaler(),
         'estimator':  XGBClassifier(
                 random_state = 42,
-                verbosity = 3,
+                #verbosity = 3,
                 # device = 'cuda',
                 # tree_method = 'hist'
                 )
@@ -96,7 +96,7 @@ clf_to_test_emb = {
         'scaling': MaxAbsScaler(),
         'estimator':  XGBClassifier(
                 random_state = 42,
-                verbosity = 3,
+                #verbosity = 3,
                 # device = 'cuda',
                 # tree_method = 'hist'
                 )
@@ -147,6 +147,10 @@ config_experiments_dict = {
 
 # Execução dos experimentos
 for corpus, config in config_experiments_dict.items():
+    
+    print(f'##### Start of {corpus} #####')
+    
+    
     data_tuples_list = create_train_test_tuples(
         list_train_paths=config["list_train_paths"],
         list_test_paths=config["list_test_paths"],
@@ -156,6 +160,9 @@ for corpus, config in config_experiments_dict.items():
     )
 
     for X_col in config["X_cols_comb"]:
+        
+        print(f'- Running classifier with features {X_col[0]} - {datetime.today()}')
+        
         for clf_name, clf in config["clf_to_test"].items():
             generate_results(
                 data_tuples_list,
@@ -165,3 +172,5 @@ for corpus, config in config_experiments_dict.items():
                 reports_path,
                 estimator_name=clf_name,
             )
+            
+    print(f'##### End of {corpus} #####\n\n\n')

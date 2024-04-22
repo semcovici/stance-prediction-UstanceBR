@@ -1,8 +1,13 @@
 *.parquet
-*.csv
-*.xlsx
+# *.csv
+# *.xlsx
 *.part
 *.npy
+
+
+data/interim/*
+data/processed/*
+data/raw/*
 
 stance-prediction-unstancebr
 
