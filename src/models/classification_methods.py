@@ -68,15 +68,17 @@ def generate_results(data_tuples_list, corpus_name, X_col, clf, reports_path, es
     if match is None:
 
         str_cols = "_".join(X_col)
+        df_cr['preprocessing'] = clf['preprocessing']
         
     else: 
         
         str_cols = match.group(1)
-        
-        
+        df_cr['preprocessing'] ='emb'
 
     cr_path = f"{reports_path}classification_reports/{estimator_name}_{corpus_name}_{str_cols}_classification_report.csv"
     test_results_path = f"{reports_path}test_results/{estimator_name}_{corpus_name}_{str_cols}_test_results.csv"
+
+    df_cr['estimator'] = clf['estimator']
 
     df_cr.to_csv(cr_path)
     df_test_results.to_csv(test_results_path)
@@ -110,6 +112,13 @@ def process_classification(
         
         y_train_enc = le_trained.transform(y_train)
         y_test_enc = le_trained.transform(y_test)
+        
+        
+        if estimator.__class__.__name__ == 'DummyClassifier':
+            preprocessing = None
+            sampling = None
+            selection = None
+            scaling = None
 
         steps = [
             ('preprocessing', preprocessing),
@@ -123,7 +132,12 @@ def process_classification(
 
         pipe.fit(X_train, y_train_enc)
         y_pred = pipe.predict(X_test)
-        y_pred_proba = pipe.predict_proba(X_test)
+        
+        try:
+            y_pred_proba = pipe.predict_proba(X_test).tolist()
+        except Exception as e:
+            y_pred_proba = None
+        
         
         df_classification_report = get_classification_report(y_test_enc, y_pred)
         
@@ -137,7 +151,7 @@ def process_classification(
             pd.DataFrame({
                 'test':[list(y_test)],
                 'pred':[list(y_pred)],
-                'pred_proba': [list(y_pred_proba)]    
+                'pred_proba': [y_pred_proba]    
             })
             ])
         

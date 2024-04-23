@@ -1,5 +1,5 @@
 ,class,precision,recall,f1-score,support,corpus,preprocessing,estimator
-0,0,0.782258064516129,0.8584070796460177,0.8185654008438819,339.0,ig,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+0,0,0.6469002695417789,0.7079646017699115,0.676056338028169,339.0,ig,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -10,7 +10,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-1,accuracy,0.7846410684474123,0.7846410684474123,0.7846410684474123,0.7846410684474123,ig,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+1,accuracy,0.6160267111853088,0.6160267111853088,0.6160267111853088,0.6160267111853088,ig,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -21,7 +21,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-2,weighted avg,0.7849874963316958,0.7846410684474123,0.7823422943835859,599.0,ig,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+2,weighted avg,0.6116935801879095,0.6160267111853088,0.6120903422120065,599.0,ig,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -32,7 +32,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-3,macro avg,0.7854021600113685,0.7734343090537781,0.7768391685944256,599.0,ig,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+3,macro avg,0.6063448716129947,0.6020592239618788,0.6023724313091665,599.0,ig,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -43,7 +43,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-4,1,0.788546255506608,0.6884615384615385,0.7351129363449692,260.0,ig,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+4,1,0.5657894736842105,0.49615384615384617,0.5286885245901639,260.0,ig,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -54,7 +54,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-0,0,0.8702702702702703,0.9938271604938271,0.9279538904899135,162.0,bo,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+0,0,0.8709677419354839,1.0,0.9310344827586207,162.0,bo,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -65,7 +65,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-1,accuracy,0.8670212765957447,0.8670212765957447,0.8670212765957447,0.8670212765957447,bo,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+1,accuracy,0.8723404255319149,0.8723404255319149,0.8723404255319149,0.8723404255319149,bo,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -76,7 +76,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-2,weighted avg,0.8421123250910486,0.8670212765957447,0.8186954104038175,188.0,bo,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+2,weighted avg,0.8888126286890872,0.8723404255319149,0.8220312336233099,188.0,bo,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -87,7 +87,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-3,macro avg,0.7684684684684684,0.535375118708452,0.532942462486336,188.0,bo,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+3,macro avg,0.935483870967742,0.5384615384615384,0.5369458128078818,188.0,bo,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -98,7 +98,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-4,1,0.6666666666666666,0.07692307692307693,0.13793103448275862,26.0,bo,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+4,1,1.0,0.07692307692307693,0.14285714285714285,26.0,bo,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -109,7 +109,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-0,0,0.6990595611285266,0.7716262975778547,0.7335526315789473,289.0,cl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+0,0,0.6024844720496895,0.671280276816609,0.6350245499181669,289.0,cl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -120,7 +120,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-1,accuracy,0.7177700348432056,0.7177700348432056,0.7177700348432056,0.7177700348432056,cl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+1,accuracy,0.6114982578397212,0.6114982578397212,0.6114982578397212,0.6114982578397212,cl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -131,7 +131,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-2,weighted avg,0.7199712670449324,0.7177700348432056,0.7168932239134421,574.0,cl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+2,weighted avg,0.6126786345503208,0.6114982578397212,0.610052508047191,574.0,cl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -142,7 +142,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-3,macro avg,0.720118015858381,0.7173920961573483,0.7167763157894737,574.0,cl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+3,macro avg,0.6127501725327813,0.6110787348995326,0.6098772656480965,574.0,cl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -153,7 +153,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-4,1,0.7411764705882353,0.6631578947368421,0.7,285.0,cl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+4,1,0.623015873015873,0.5508771929824562,0.5847299813780261,285.0,cl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -164,7 +164,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-0,1,0.7036199095022625,0.7404761904761905,0.7215777262180975,420.0,co,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+0,1,0.6898148148148148,0.7095238095238096,0.6995305164319249,420.0,co,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -175,7 +175,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-1,accuracy,0.689922480620155,0.689922480620155,0.689922480620155,0.689922480620155,co,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+1,accuracy,0.6692506459948321,0.6692506459948321,0.6692506459948321,0.6692506459948321,co,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -186,7 +186,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-2,weighted avg,0.6890148196701358,0.689922480620155,0.6889072978167224,774.0,co,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+2,weighted avg,0.6685290962116747,0.6692506459948321,0.668728579263158,774.0,co,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -197,7 +197,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-3,macro avg,0.6876533282451072,0.6852098466505246,0.6858617494064247,774.0,co,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+3,macro avg,0.6665448343079922,0.6654963680387409,0.665857212238951,774.0,co,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -208,7 +208,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-4,0,0.6716867469879518,0.6299435028248588,0.6501457725947521,354.0,co,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+4,0,0.6432748538011696,0.6214689265536724,0.632183908045977,354.0,co,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -219,7 +219,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-0,1,0.7969348659003831,0.8524590163934426,0.8237623762376237,244.0,gl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+0,1,0.622895622895623,0.7581967213114754,0.6839186691312384,244.0,gl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -230,7 +230,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-1,accuracy,0.7834549878345499,0.7834549878345499,0.7834549878345499,0.7834549878345499,gl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+1,accuracy,0.583941605839416,0.583941605839416,0.583941605839416,0.583941605839416,gl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -241,7 +241,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-2,weighted avg,0.781927268320422,0.7834549878345499,0.7812933928728708,411.0,gl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+2,weighted avg,0.5658314049273199,0.583941605839416,0.5650847220156915,411.0,gl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -252,7 +252,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-3,macro avg,0.7784674329501915,0.7675468734661823,0.7715026392229127,411.0,gl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+3,macro avg,0.5526758816232501,0.5437690193383724,0.5376888719321673,411.0,gl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -263,7 +263,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-4,0,0.76,0.6826347305389222,0.7192429022082019,167.0,gl,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+4,0,0.4824561403508772,0.32934131736526945,0.3914590747330961,167.0,gl,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -274,7 +274,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-0,0,0.6818181818181818,0.7342657342657343,0.7070707070707071,143.0,lu,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+0,0,0.5506329113924051,0.6083916083916084,0.5780730897009967,143.0,lu,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -285,7 +285,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-1,accuracy,0.6801470588235294,0.6801470588235294,0.6801470588235294,0.6801470588235294,lu,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+1,accuracy,0.5330882352941176,0.5330882352941176,0.5330882352941176,0.5330882352941176,lu,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -296,7 +296,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-2,weighted avg,0.6799912761714855,0.6801470588235294,0.6789480299542219,272.0,lu,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+2,weighted avg,0.5307797252811851,0.5330882352941176,0.5303113924294954,272.0,lu,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -307,7 +307,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-3,macro avg,0.6798921417565484,0.6772103865127121,0.6774219932114669,272.0,lu,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+3,macro avg,0.5297024206084833,0.5290020057461918,0.5277196724225148,272.0,lu,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -318,7 +318,7 @@
               min_child_weight=None, missing=nan, monotone_constraints=None,
               multi_strategy=None, n_estimators=None, n_jobs=None,
               num_parallel_tree=None, random_state=42, ...)"
-4,1,0.6779661016949152,0.6201550387596899,0.6477732793522267,129.0,lu,emb,"XGBClassifier(base_score=None, booster=None, callbacks=None,
+4,1,0.5087719298245614,0.4496124031007752,0.4773662551440329,129.0,lu,TfidfVectorizer(),"XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, device=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,

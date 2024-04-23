@@ -34,6 +34,7 @@ warnings.filterwarnings("ignore")
 
 import sys
 sys.path.append('src/')
+from models.config.experiments_config import get_experiments_config
 from models.classification_methods import create_train_test_tuples, generate_results 
 
 model_name = 'neuralmind/bert-base-portuguese-cased'
@@ -69,27 +70,7 @@ list_test_paths_users_emb = [users_emb_path.format(t,"test", model_name.replace(
 
 
 
-clf_to_test = {
-    'dummy': {
-        'estimator': DummyClassifier()
-    },
-    'tfidf_xgb':{
-        'preprocessing': TfidfVectorizer(
-                    stop_words = stopwords.words('portuguese'),
-                    lowercase = True,
-                    # ngram_range = (1,3),
-                    # max_features=50
-                    
-                    ),
-        'scaling': MaxAbsScaler(),
-        'estimator':  XGBClassifier(
-                random_state = 42,
-                #verbosity = 3,
-                # device = 'cuda',
-                # tree_method = 'hist'
-                )
-    }
-}
+clf_to_test = get_experiments_config()
 
 clf_to_test_emb = {
     'bertimbau_xgb':{
@@ -161,16 +142,16 @@ for corpus, config in config_experiments_dict.items():
 
     for X_col in config["X_cols_comb"]:
         
-        print(f'- Running classifier with features {X_col[0]} - {datetime.today()}')
+        items = config["clf_to_test"].items()
         
-        for clf_name, clf in config["clf_to_test"].items():
-            generate_results(
+        with joblib_progress(f'- Running classifier with features {X_col[0]} - {datetime.today()}', total=len(items)):
+            parallel = Parallel(n_jobs=-1)
+            parallel(delayed(generate_results)(
                 data_tuples_list,
                 corpus,
                 X_col,
                 clf,
                 reports_path,
-                estimator_name=clf_name,
-            )
+                estimator_name=clf_name) for clf_name, clf in items)
             
     print(f'##### End of {corpus} #####\n\n\n')
