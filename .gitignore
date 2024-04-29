@@ -3,7 +3,7 @@
 # *.xlsx
 *.part
 *.npy
-
+llama3_local/
 
 data/interim/*
 data/processed/*

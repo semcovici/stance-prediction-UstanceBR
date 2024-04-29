@@ -18,7 +18,8 @@ path_processed_data = 'data/processed/'
 ################ Options for generation ####################
 model_names = [
     #'neuralmind/bert-large-portuguese-cased', 
-    'neuralmind/bert-base-portuguese-cased'
+    # 'neuralmind/bert-base-portuguese-cased',
+    'pablocosta/bertabaporu-base-uncased'
     ]
 list_target = [
     'ig', 
@@ -29,12 +30,12 @@ list_target = [
     'lu'
     ]
 list_splits = [
-    #'train', 
+    'train', 
     'test'
     ]
 list_datasets = [
     'top_mentioned_timelines',
-    #'users'
+    'users'
 ]
 ############################################################
 

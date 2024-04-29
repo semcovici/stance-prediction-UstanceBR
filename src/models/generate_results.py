@@ -57,7 +57,7 @@ users_path = raw_data_path + 'r3_{}_{}_users.csv'
 list_train_paths_users = [users_path.format(t,"train") for t in target_list]
 list_test_paths_users = [users_path.format(t,"test") for t in target_list]
 
-model_name = 'neuralmind/bert-base-portuguese-cased'
+model_name = 'pablocosta/bertabaporu-base-uncased' 
 
 top_ment_time_emb_path = processed_data_path + '{}_r3_{}_top_mentioned_timelines_{}.parquet'
 list_train_paths_tmt_emb = [top_ment_time_emb_path.format("train",t, model_name.replace("/", "_")) for t in target_list]
@@ -87,22 +87,22 @@ clf_to_test_emb = {
 
 # X_cols_comb: possible combinations of X_col
 config_experiments_dict = {
-    'top_mentioned_timelines':{
-        'list_train_paths': list_train_paths_tmt,
-        'list_test_paths' : list_test_paths_tmt,
-        'file_type': 'csv',
-        'read_data_args' : {'sep': ';', 'encoding': 'utf-8-sig'},
-        'X_cols_comb': [['Texts']],
-        'clf_to_test': clf_to_test
-    },
-    'users':{
-        'list_train_paths': list_train_paths_users,
-        'list_test_paths' : list_test_paths_users,
-        'file_type': 'csv',
-        'read_data_args' : {'sep': ';', 'encoding': 'utf-8-sig'},
-        'X_cols_comb': [['Timeline'], ['Stance']],
-        'clf_to_test': clf_to_test
-    },
+    # 'top_mentioned_timelines':{
+    #     'list_train_paths': list_train_paths_tmt,
+    #     'list_test_paths' : list_test_paths_tmt,
+    #     'file_type': 'csv',
+    #     'read_data_args' : {'sep': ';', 'encoding': 'utf-8-sig'},
+    #     'X_cols_comb': [['Texts']],
+    #     'clf_to_test': clf_to_test
+    # },
+    # 'users':{
+    #     'list_train_paths': list_train_paths_users,
+    #     'list_test_paths' : list_test_paths_users,
+    #     'file_type': 'csv',
+    #     'read_data_args' : {'sep': ';', 'encoding': 'utf-8-sig'},
+    #     'X_cols_comb': [['Timeline'], ['Stance']],
+    #     'clf_to_test': clf_to_test
+    # },
     'users_emb':{
         'list_train_paths': list_train_paths_users_emb,
         'list_test_paths' : list_test_paths_users_emb,
