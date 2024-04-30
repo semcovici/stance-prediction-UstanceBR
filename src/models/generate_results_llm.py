@@ -105,7 +105,7 @@ for target in target_list:
     
     cr_path = f"{reports_path}classification_reports/{estimator_name}_{target}_{text_col}_classification_report.csv"
     
-    for idx, row in tqdm(data.iterrows(), total = len(data)):
+    for idx, row in tqdm(data.iterrows(), total = len(data), desc = target):
         
         
         
