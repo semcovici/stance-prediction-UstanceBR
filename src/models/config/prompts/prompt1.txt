@@ -1,0 +1,7 @@
+Below there is a comment in Portuguese about the entity {target}. Classify the text below as "for" or "against" the entity {target}.
+
+Your response should be a dictionary in the format:{{"classification":[your classification (for or against)]}}
+Don't write anything in the answer other than the dictionary.
+
+Text to be classified:
+{text}

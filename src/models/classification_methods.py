@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, f1_score, precision_score, recall_score, accuracy_score
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from sklearn.preprocessing import MaxAbsScaler
@@ -21,12 +21,25 @@ from joblib import Parallel, delayed
 from sklearn.feature_selection import SelectPercentile
 
 
-def get_classification_report(y_test, y_pred):
+def get_classification_report(y_test, y_pred, cr_args = {}):
     '''Source: https://stackoverflow.com/questions/39662398/scikit-learn-output-metrics-classification-report-into-csv-tab-delimited-format'''
-    report = classification_report(y_test, y_pred, output_dict=True)
+    report = classification_report(y_test, y_pred, output_dict=True, **cr_args)
     df_classification_report = pd.DataFrame(report).transpose()
     df_classification_report = df_classification_report.sort_values(by=['f1-score'], ascending=False)
     return df_classification_report
+
+# def get_classification_report(y_test, y_pred, binary = True):
+    
+#     metrics = {}
+#     if binary:
+        
+#         metrics["f1-score"] = f1_score(y_test, y_pred)
+#         metrics["recall"] = precision_score(y_test, y_pred)
+#         metrics["precision"] = recall_score(y_test, y_pred)
+#         metrics["accuracy"] = accuracy_score(y_test, y_pred)
+        
+#     return metrics
+
 
 
 # Leitura de dados
