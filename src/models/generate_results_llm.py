@@ -22,8 +22,11 @@ reports_path = 'reports/'
 target_list = ['ig','bo', 'cl', 'co', 'gl', 'lu']
 
 estimator_name = 'llama3'
+prompt_name = 'prompt1'
 
-with open('src/models/config/prompts/prompt1.txt', 'r') as file:
+
+
+with open(f'src/models/config/prompts/{prompt_name}.txt', 'r') as file:
     
     prompt_template = file.read() 
 
@@ -86,6 +89,9 @@ def format_response(response):
 
 
 dict_responses = {}
+
+list_results = [] 
+
 for target in target_list:
 
     df_responses = pd.DataFrame({
@@ -107,10 +113,8 @@ for target in target_list:
     
     for idx, row in tqdm(data.iterrows(), total = len(data), desc = target):
         
-        
-        
-        
         text = row['Stance']
+        target_id = target
         target = dict_cp.get(row['target'])
         polarity = row["Polarity"]
         polarity = 1 if polarity == 'for' else 0
@@ -139,6 +143,14 @@ for target in target_list:
     
     df_cr = get_classification_report(df_responses.y_test, df_responses.y_pred)
     
-    df_cr.to_csv(cr_path)
+    df_cr = df_cr.reset_index().rename({'index': 'class'},axis = 1)
+    
+    df_cr['Target'] = target_id 
+    
+    list_results.append(df_cr)    
+    
+df_results = pd.concat(list_results)
+
+df_results.to_csv(f"{reports_path}classification_reports/{estimator_name}_{prompt_name}_{text_col}_classification_report.csv")
 
 
