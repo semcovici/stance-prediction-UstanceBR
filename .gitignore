@@ -8,6 +8,7 @@ llama3_local/
 data/interim/*
 data/processed/*
 data/raw/*
+reports/test_results/*
 
 stance-prediction-unstancebr
 
