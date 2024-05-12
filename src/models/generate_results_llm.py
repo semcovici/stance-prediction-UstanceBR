@@ -44,10 +44,27 @@ dict_cp = {
     'bo':'Bolsonaro',
 }
 
-file_format_users = 'r3_{target}_test_users.csv'
-file_format_tmt = 'test_r3_{target}_top_mentioned_timelines.csv'
+file_format_users = raw_data_path +'r3_{target}_test_users.csv'
+file_format_users_filtered = processed_data_path +'r3_{target}_test_users_filtered_Timeline.csv'
+file_format_tmt = raw_data_path +'test_r3_{target}_top_mentioned_timelines.csv'
+file_format_tmt_filtered = processed_data_path +'test_r3_{target}_top_mentioned_timelines_filtered_Texts.csv'
+
 
 dict_experiments = {
+    'filtered_Texts': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_users_filtered
+    },
     'Texts': {
         "text_col": 'Texts',
         "prompts_to_test": ['prompt2_Texts'],
@@ -127,7 +144,7 @@ for exp_name, config in dict_experiments.items():
     for target in target_list:
         
         # read data
-        data_aux = pd.read_csv(raw_data_path + file_format.format(target=target), sep = ';', encoding='utf-8-sig')
+        data_aux = pd.read_csv( file_format.format(target=target), sep = ';', encoding='utf-8-sig')
         
         data_aux['target'] = target
         

@@ -198,9 +198,6 @@ datasets = {
 }
 
 def main():
-
-    dict_data_users = {}
-    dict_data_tmt = {}
     
     for dataset_name, config in datasets.items():
 
@@ -227,7 +224,8 @@ def main():
                 
                 data['filtered_Timeline'] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list, L))
                 
-                data.to_csv(path_output,index=False)
+                data.to_csv(path_output,index=False,                    sep = ';', 
+                    encoding='utf-8-sig')
 
 if __name__ == "__main__":
     main()
