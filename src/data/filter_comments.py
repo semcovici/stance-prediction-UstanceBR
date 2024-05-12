@@ -222,10 +222,9 @@ def main():
                     encoding='utf-8-sig'
                 )
                 
-                data['filtered_Timeline'] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list, L))
+                data[f'filtered_{config['text_col']}'] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list, L))
                 
-                data.to_csv(path_output,index=False,                    sep = ';', 
-                    encoding='utf-8-sig')
+                data.to_csv(path_output,index=False,sep = ';',encoding='utf-8-sig')
 
 if __name__ == "__main__":
     main()

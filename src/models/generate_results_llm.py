@@ -52,39 +52,39 @@ file_format_tmt_filtered = processed_data_path +'test_r3_{target}_top_mentioned_
 
 dict_experiments = {
     'filtered_Texts': {
-        "text_col": 'Texts',
+        "text_col": 'filtered_Texts',
         "prompts_to_test": ['prompt2_Texts'],
         "is_multi_text": True,
         "n_comments": 30,
         "file_format": file_format_tmt_filtered
     },
     'filteredTimeline': {
-        "text_col": 'Timeline',
+        "text_col": 'filtered_Timeline',
         "prompts_to_test": ['prompt2_Timeline'],
         "is_multi_text": True,
         "n_comments": 30,
         "file_format": file_format_users_filtered
     },
-    'Texts': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 30,
-        "file_format": file_format_tmt
-    },
-    'Timeline': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 30,
-        "file_format": file_format_users
-    },
-    'Stance': {
-        "text_col": 'Stance',
-        "prompts_to_test": ['prompt2_Stance'],
-        "is_multi_text": False,
-        "file_format": file_format_users
-    }
+    # 'Texts': {
+    #     "text_col": 'Texts',
+    #     "prompts_to_test": ['prompt2_Texts'],
+    #     "is_multi_text": True,
+    #     "n_comments": 30,
+    #     "file_format": file_format_tmt
+    # },
+    # 'Timeline': {
+    #     "text_col": 'Timeline',
+    #     "prompts_to_test": ['prompt2_Timeline'],
+    #     "is_multi_text": True,
+    #     "n_comments": 30,
+    #     "file_format": file_format_users
+    # },
+    # 'Stance': {
+    #     "text_col": 'Stance',
+    #     "prompts_to_test": ['prompt2_Stance'],
+    #     "is_multi_text": False,
+    #     "file_format": file_format_users
+    # }
 }
 
 #############################
