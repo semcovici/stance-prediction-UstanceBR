@@ -1,7 +1,7 @@
 ######################
 # Imports
 ######################
-
+from nltk.tokenize import word_tokenize
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
@@ -129,23 +129,46 @@ target_terms_dict = {
 
 # given comments separated by " # " and a list of terms, 
 # return all coments that have at least one of terms in the list_terms
-def find_relevant_comments(comments, list_terms, L = None):    
+# def find_relevant_comments(comments, list_terms, L = None):    
     
+#     list_comments = comments.split(' # ')
+        
+#     terms_set = set(t.casefold() for t in list_terms)
+    
+#     list_rel_comments = [
+#         com for com in list_comments 
+#         if any(term in tk.casefold() for term in terms_set for tk in word_tokenize(com, language='portuguese'))
+#         ]
+    
+#     if L is not None:
+        
+#         list_rel_comments = create_comment_list(list_comments, list_rel_comments, L)
+        
+#     str_rel_comments = ' # '.join(list_rel_comments) if len(list_rel_comments) > 0 else ''
+    
+#     return str_rel_comments
+
+# from nltk.tokenize import word_tokenize
+
+def find_relevant_comments(comments, list_terms, L=None):
+    # Pré-processamento dos termos
+    terms_set = set(term.casefold() for term in list_terms)
+    
+    # Tokenização dos comentários
     list_comments = comments.split(' # ')
+    tokenized_comments = [set(word_tokenize(comment, language='portuguese')) for comment in list_comments]
     
-    terms_set = set(t.casefold() for t in list_terms)
-    
+    # Criação da lista de comentários relevantes
     list_rel_comments = [
-        com for com in list_comments if any(term in com.casefold() for term in terms_set)
+        com for com, tokens in zip(list_comments, tokenized_comments) 
+        if any(term in terms_set for term in tokens)
     ]
     
-    if L is not None:
-        
-        list_rel_comments = create_comment_list(list_comments, list_rel_comments, L)
-        
-    str_rel_comments = ' # '.join(list_rel_comments) if len(list_rel_comments) > 0 else ''
+    # Concatenação dos comentários relevantes
+    str_rel_comments = ' # '.join(list_rel_comments) if list_rel_comments else ''
     
     return str_rel_comments
+
 
 def create_comment_list(A, B, L):
     """
@@ -188,43 +211,50 @@ datasets = {
     "users": {
         "path_input_format":path_raw_data + 'r3_{target}_{split}_users.csv', 
         "path_output_format":path_processed_data + 'r3_{target}_{split}_users_filtered_Timeline.csv', 
+        "path_output_format_L":path_processed_data + 'r3_{target}_{split}_users_filtered_Timeline' + f'_L={L}_.csv', 
         "text_col": "Timeline"
     },
     "tmt":{
         "path_input_format":path_raw_data + '{split}_r3_{target}_top_mentioned_timelines.csv',
         "path_output_format":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_filtered_Texts.csv',
+        "path_output_format_L":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_filtered_Texts'+ f'_L={L}_.csv',
         "text_col": "Texts"
     }
 }
 
-def main():
-    
-    for dataset_name, config in datasets.items():
 
-        for target, terms_list in target_terms_dict.items():
-            
-            print(f"""
+
+for dataset_name, config in datasets.items():
+
+    for target, terms_list in target_terms_dict.items():
+        
+        print(f"""
 ########################################
 # Running dataset:{dataset_name} | target:{target}
 ########################################""")
 
-            for split in ["train", "test"]:
-                
-                print(f'# {split}')
+        for split in [
+            #"train", 
+            "test"
+            ]:
             
-                path_data = config['path_input_format'].format(split = split, target = target)
-                path_output = config['path_output_format'].format(split = split, target = target)
-                
-                # read data
-                data = pd.read_csv(
-                    path_data,
-                    sep = ';', 
-                    encoding='utf-8-sig'
-                )
-                
-                data[f'filtered_{config['text_col']}'] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list, L))
-                
-                data.to_csv(path_output,index=False,sep = ';',encoding='utf-8-sig')
-
-if __name__ == "__main__":
-    main()
+            print(f'# {split}')
+        
+            path_data = config['path_input_format'].format(split = split, target = target)
+            path_output_L = config['path_output_format_L'].format(split = split, target = target)
+            path_output_normal = config['path_output_format'].format(split = split, target = target)
+            
+            # read data
+            data = pd.read_csv(
+                path_data,
+                sep = ';', 
+                encoding='utf-8-sig'
+            )
+            
+            data_L = data.copy()
+            
+            #data_L[f'filtered_{config['text_col']}'] = data_L[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list, L))
+            data[f'filtered_{config['text_col']}'] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list))
+                        
+            data_L.to_csv(path_output_L,index=False,sep = ';',encoding='utf-8-sig')
+            data.to_csv(path_output_normal,index=False,sep = ';',encoding='utf-8-sig')

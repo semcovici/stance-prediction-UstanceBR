@@ -91,7 +91,7 @@ dict_experiments = {
 # Aux Functions
 #############################
 def get_response_from_llm(prompt):
-    response_full = ollama.generate(model=estimator_name, prompt = prompt)
+    response_full = ollama.generate(model=estimator_name, prompt = prompt, option = {'seed': random_seed})
     return response_full
 
 
@@ -198,8 +198,13 @@ for exp_name, config in dict_experiments.items():
                     n_comments = config['n_comments']
                     
                     # create list with comments and get the firt n comments
-                    comments = text.split(' # ')
-                    comments_filtered =  comments[:n_comments]
+                    try:
+                        comments = text.split(' # ')
+                        comments_filtered =  comments[:n_comments]
+                        
+                    except Exception as e:
+                        
+                        comments = []
                     
                     texts = ''
                     for c in comments_filtered:
