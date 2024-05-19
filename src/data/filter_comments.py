@@ -151,13 +151,13 @@ def find_relevant_comments(comments, terms_list, L=None):
 splits = ["train", "test"]
 datasets = {
     "users": {
-        "path_input_format":path_raw_data + 'r3_{target}_{split}_users.csv', 
+        "path_input_format":path_processed_data + 'r3_{target}_{split}_users_processed.csv', 
         "path_output_format":path_processed_data + 'r3_{target}_{split}_users_scored_Timeline.csv', 
         "path_output_format_L":path_processed_data + 'r3_{target}_{split}_users_scored_Timeline' + f'_L={L}_.csv', 
         "text_col": "Timeline"
     },
     "tmt":{
-        "path_input_format":path_raw_data + '{split}_r3_{target}_top_mentioned_timelines.csv',
+        "path_input_format":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_processed.csv',
         "path_output_format":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_scored_Texts.csv',
         "path_output_format_L":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_scored_Texts'+ f'_L={L}_.csv',
         "text_col": "Texts"
@@ -199,7 +199,6 @@ for dataset_name, config in datasets.items():
                 sep = ';', 
                 encoding='utf-8-sig'
             )
-                    
             
             new_col = f'comments_and_scores_{config['text_col']}'
             
