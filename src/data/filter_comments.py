@@ -1,240 +1,189 @@
 ######################
 # Imports
 ######################
-from nltk.tokenize import word_tokenize
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
+import pandas as pd
+import seaborn as sns
+from nltk.tokenize import word_tokenize
+import nltk
+from unidecode import unidecode
+import numpy as np
 
 tqdm.pandas()
+
 
 ######################
 # Definitions
 ######################
 
-L = 30
+L = 15
 
 path_raw_data = 'data/raw/'
 path_processed_data = 'data/processed/'
 
+######################
+# Lists
+######################
 terms_list_ig = [
-    "igreja",
-    "catedral",
-    "capela",
-    "templo",
-    "paróquia",
-    "basílica",
-    "padre",
-    "pastor",
-    "bispo",
-    "cardeal",
-    "papa",
-    "sacerdote",
-    "arcebispo",
-    "deão",
-    "vigário",
-    "altar",
-    "crucifixo",
-    "cálice",
-    "hóstia",
-    "círio",
-    "batistério",
-    "sacristia",
-    "tabernáculo",
-    "missa",
-    "culto",
-    "batismo",
-    "comunhão",
-    "confissão",
-    "crisma",
-    "cerimônia",
     "vaticano",
-    "concílio",
-    "encíclica",
-    "dioceses"
-]
+    "crisma",
+    "comunhão",
+    "batismo",
+    "culto",
+    "missa",
+    "hóstia",
+    "cálice",
+    "crucifixo",
+    "altar",
+    "sacerdote",
+    "papa",
+    "bispo",
+    "paróquia",
+    "templo",
+    "capela",
+    "catedral",
+    "pastor",
+    "padre",
+    "igreja"]
 
-terms_list_cl= [
-    "hidroxicloroquina",
-    "remédio",
-    "medicamento",
-    "tratamento",
+
+terms_list_cl = [
+    "droga",
     "antimalárico",
-    "antimalárico sintético",
-    "droga"
-]
+    "tratamento",
+    "medicamento",
+    "remédio",
+    "hidroxicloroquina",
+    "cloroquina"]
+
 
 terms_list_lu = [
-    "lula",
-    "presidente",
-    "luiz inácio lula da silva",
-    "pt",
-    "partido dos trabalhadores",
+    "13",
+    "política",
+    "governo",
     "ex-presidente",
-    "liderança política",
-    "governo lula",
-    "política"
-]
+    "luiz inácio lula da silva",
+    "partido dos trabalhadores",
+    "presidente",
+    "pt",
+    "lula"]
+
 
 terms_list_co = [
-    "sinovac",
-    "coronavac",
-    "vacina",
-    "vacina chinesa",
-    "imunização",
-    "vacinação",
-    "biontech",
+    "china",
+    "pandemia",
     "covid-19",
-    "pandemia"
-]
+    "biontech",
+    "vacinação",
+    "imunização",
+    "vacina",
+    "vachina",
+    "coronavac",
+    "sinovac"]
+
+
 terms_list_gl = [
-    "globo",
-    "tv globo",
-    "rede globo",
-    "televisão",
-    "emissora",
-    "rede de televisão",
-    "mídia",
     "jornalismo",
-    "programação de tv",
-    "entretenimento"
-]
+    "mídia",
+    "emissora",
+    "televisão",
+    "tv",
+    "globo"]
 
 
 terms_list_bo = [
-    "bolsonaro",
-    "jair bolsonaro",
-    "presidente",
-    "presidente do brasil",
-    "governo bolsonaro",
-    "partido liberal",
-    "política",
+    "17",
+    "22",
+    "ex-presidente",
     "conservador",
-    "ex-presidente"
+    "política",
+    "pl",
+    "partido liberal",
+    "governo bolsonaro",
+    "presidente",
+    "jair",
+    "bolsonaro"
 ]
 
 target_terms_dict = {
-    'ig': terms_list_ig,
-    'bo': terms_list_bo, 
-    'cl': terms_list_cl, 
-    'co':terms_list_co, 
-    'gl': terms_list_gl, 
-    'lu': terms_list_lu
+    'ig': [term.casefold() for term in terms_list_ig],
+    'bo': [term.casefold() for term in terms_list_bo], 
+    'cl': [term.casefold() for term in terms_list_cl], 
+    'co': [term.casefold() for term in terms_list_co], 
+    'gl': [term.casefold() for term in terms_list_gl], 
+    'lu': [term.casefold() for term in terms_list_lu]
 }
 
 
 ######################
 # Functions
 ######################
-
+# Function to tokenize sentences
+def tokenize_sentences(sentences):
+    # Split sentences into lists of words
+    tokenized = np.char.split(sentences)
+    return tokenized
 # given comments separated by " # " and a list of terms, 
-# return all coments that have at least one of terms in the list_terms
-# def find_relevant_comments(comments, list_terms, L = None):    
-    
-#     list_comments = comments.split(' # ')
-        
-#     terms_set = set(t.casefold() for t in list_terms)
-    
-#     list_rel_comments = [
-#         com for com in list_comments 
-#         if any(term in tk.casefold() for term in terms_set for tk in word_tokenize(com, language='portuguese'))
-#         ]
-    
-#     if L is not None:
-        
-#         list_rel_comments = create_comment_list(list_comments, list_rel_comments, L)
-        
-#     str_rel_comments = ' # '.join(list_rel_comments) if len(list_rel_comments) > 0 else ''
-    
-#     return str_rel_comments
+# return all coments that have at least one of terms in the terms_list
+def find_relevant_comments(comments, terms_list, L=None):
 
-# from nltk.tokenize import word_tokenize
-
-def find_relevant_comments(comments, list_terms, L=None):
-    # Pré-processamento dos termos
-    terms_set = set(term.casefold() for term in list_terms)
-    
     # Tokenização dos comentários
-    list_comments = comments.split(' # ')
-    tokenized_comments = [set(word_tokenize(comment, language='portuguese')) for comment in list_comments]
+    list_comments = np.array(comments.split(' # '))
+    tokenized_comments = tokenize_sentences(list_comments) 
     
-    # Criação da lista de comentários relevantes
-    list_rel_comments = [
-        com for com, tokens in zip(list_comments, tokenized_comments) 
-        if any(term in terms_set for term in tokens)
-    ]
+    func = lambda tokenized_comment: o if (o:= np.where(np.isin(terms_list, tokenized_comment) == 1)[0].max(initial = -100000)) else -1
+    vfunc = np.vectorize(func)
+    score_com = vfunc(tokenized_comments)
     
+    sorted_score_com = sorted(zip(score_com, list_comments))
+    
+    if L is not None:
+        
+        sorted_score_com = sorted_score_com[-L:]
+    
+    #sorted_scores, sorted_com=list(zip(*sorted_score_com))      
     # Concatenação dos comentários relevantes
-    str_rel_comments = ' # '.join(list_rel_comments) if list_rel_comments else ''
-    
-    return str_rel_comments
-
-
-def create_comment_list(A, B, L):
-    """
-    Creates a new comment list C of size L. If B contains more than L comments,
-    randomly selects L comments from B. If B contains fewer than L comments, it
-    randomly selects the remaining comments from A to fill up C.
-
-    Parameters:
-        A (list): List of comments from the social network.
-        B (list): List of comments from a user on the social network.
-        L (int): Size of the new comment list C.
-
-    Returns:
-        list: New comment list C of size L.
-    """
-    C = []
-
-    if len(B) >= L:
-        # If B has at least L comments, select L comments randomly without replacement
-        C = np.random.choice(B, L, replace=False)
-    else:
-        # If B has fewer than L comments, add all comments from B
-        C.extend(B)
-        remaining_comments = L - len(B)
-        if remaining_comments <= len(A):
-            # If there are enough comments in A to fill up C, randomly select the remaining comments from A
-            A_comments = np.random.choice(A, remaining_comments, replace=False)
-            C.extend(A_comments)
-        else:
-            pass
-
-    return C
-
-######################
-# Process
-######################
+    #str_rel_comments = ' # '.join(sorted_com) if sorted_com else ''
+    return sorted_score_com
 
 splits = ["train", "test"]
 datasets = {
     "users": {
         "path_input_format":path_raw_data + 'r3_{target}_{split}_users.csv', 
-        "path_output_format":path_processed_data + 'r3_{target}_{split}_users_filtered_Timeline.csv', 
-        "path_output_format_L":path_processed_data + 'r3_{target}_{split}_users_filtered_Timeline' + f'_L={L}_.csv', 
+        "path_output_format":path_processed_data + 'r3_{target}_{split}_users_scored_Timeline.csv', 
+        "path_output_format_L":path_processed_data + 'r3_{target}_{split}_users_scored_Timeline' + f'_L={L}_.csv', 
         "text_col": "Timeline"
     },
     "tmt":{
         "path_input_format":path_raw_data + '{split}_r3_{target}_top_mentioned_timelines.csv',
-        "path_output_format":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_filtered_Texts.csv',
-        "path_output_format_L":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_filtered_Texts'+ f'_L={L}_.csv',
+        "path_output_format":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_scored_Texts.csv',
+        "path_output_format_L":path_processed_data + '{split}_r3_{target}_top_mentioned_timelines_scored_Texts'+ f'_L={L}_.csv',
         "text_col": "Texts"
     }
 }
 
+######################
+# Process
+######################
 
-
+dict_final = {}
 for dataset_name, config in datasets.items():
 
+    
+
+    dict_dfs = {}
     for target, terms_list in target_terms_dict.items():
         
-        print(f"""
-########################################
+        print(f"""########################################
 # Running dataset:{dataset_name} | target:{target}
 ########################################""")
+        
+        dict_splits = {}
 
         for split in [
-            #"train", 
+            "train", 
             "test"
             ]:
             
@@ -250,11 +199,27 @@ for dataset_name, config in datasets.items():
                 sep = ';', 
                 encoding='utf-8-sig'
             )
+                    
+            
+            new_col = f'comments_and_scores_{config['text_col']}'
+            
+            data[new_col] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list))
+            
+            data.to_csv(path_output_normal,index = False)
+            
             
             data_L = data.copy()
+            data_L[config['text_col'] + f"_L={L}"] = data_L[new_col].progress_apply(lambda x: " # ".join([comment for score, comment in x[-L:]])) 
             
-            #data_L[f'filtered_{config['text_col']}'] = data_L[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list, L))
-            data[f'filtered_{config['text_col']}'] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list))
-                        
-            data_L.to_csv(path_output_L,index=False,sep = ';',encoding='utf-8-sig')
-            data.to_csv(path_output_normal,index=False,sep = ';',encoding='utf-8-sig')
+            data_L.to_csv(path_output_L, index = False)
+            
+            
+            
+            dict_splits.update({split:data})
+            
+            
+        dict_dfs.update({target:dict_splits})
+        
+    dict_final.update({dataset_name:dict_dfs})
+
+
