@@ -4,7 +4,8 @@
 import ollama
 import pandas as pd
 from tqdm import tqdm
-import ast
+from ast import literal_eval
+tqdm.pandas()
 
 from sklearn.metrics import classification_report, precision_score, f1_score
 
@@ -45,53 +46,82 @@ dict_cp = {
 }
 
 file_format_users = raw_data_path +'r3_{target}_test_users.csv'
-file_format_users_filtered = processed_data_path +'r3_{target}_test_users_filtered_Timeline.csv'
+file_format_users_filtered = processed_data_path + 'r3_{target}_test_users_scored_Timeline.csv' 
 file_format_tmt = raw_data_path +'test_r3_{target}_top_mentioned_timelines.csv'
-file_format_tmt_filtered = processed_data_path +'test_r3_{target}_top_mentioned_timelines_filtered_Texts.csv'
+file_format_tmt_filtered = processed_data_path + 'test_r3_{target}_top_mentioned_timelines_scored_Texts.csv'
 
 
 dict_experiments = {
-    'filtered_Texts': {
-        "text_col": 'filtered_Texts',
+    'filtered_Texts15': {
+        "text_col": 'Texts',
         "prompts_to_test": ['prompt2_Texts'],
         "is_multi_text": True,
-        "n_comments": 30,
+        "n_comments": 15,
         "file_format": file_format_tmt_filtered
     },
-    'filteredTimeline': {
-        "text_col": 'filtered_Timeline',
+    'filteredTimeline15': {
+        "text_col": 'Timeline',
         "prompts_to_test": ['prompt2_Timeline'],
         "is_multi_text": True,
-        "n_comments": 30,
+        "n_comments": 15,
         "file_format": file_format_users_filtered
     },
-    # 'Texts': {
+    
+    'filtered_Texts5': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 5,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline5': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 5,
+        "file_format": file_format_users_filtered
+    },
+    # 'filtered_Texts10': {
     #     "text_col": 'Texts',
     #     "prompts_to_test": ['prompt2_Texts'],
     #     "is_multi_text": True,
-    #     "n_comments": 30,
-    #     "file_format": file_format_tmt
+    #     "n_comments": 10,
+    #     "file_format": file_format_tmt_filtered
     # },
-    # 'Timeline': {
+    # 'filteredTimeline10': {
     #     "text_col": 'Timeline',
     #     "prompts_to_test": ['prompt2_Timeline'],
     #     "is_multi_text": True,
-    #     "n_comments": 30,
-    #     "file_format": file_format_users
+    #     "n_comments": 10,
+    #     "file_format": file_format_users_filtered
     # },
-    # 'Stance': {
-    #     "text_col": 'Stance',
-    #     "prompts_to_test": ['prompt2_Stance'],
-    #     "is_multi_text": False,
-    #     "file_format": file_format_users
-    # }
+    'Texts': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_tmt
+    },
+    'Timeline': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_users
+    },
+    'Stance': {
+        "text_col": 'Stance',
+        "prompts_to_test": ['prompt2_Stance'],
+        "is_multi_text": False,
+        "file_format": file_format_users
+    }
 }
 
 #############################
 # Aux Functions
 #############################
 def get_response_from_llm(prompt):
-    response_full = ollama.generate(model=estimator_name, prompt = prompt, option = {'seed': random_seed})
+    response_full = ollama.generate(model=estimator_name, prompt = prompt, options = {'seed': random_seed})
     return response_full
 
 
@@ -178,6 +208,17 @@ for exp_name, config in dict_experiments.items():
             })
             
             data = test_df[test_df['target'] == target]    
+                                    
+            # if is multi_text, filter only the best n comments
+            if is_multi_text:
+                                
+                data[f'comments_and_scores_{text_col}'] = data[f'comments_and_scores_{text_col}'].progress_apply(lambda x: literal_eval(x))
+                
+                n_comments = config['n_comments']
+                
+                data[text_col] = data[f'comments_and_scores_{text_col}'].progress_apply(
+                    lambda x: " # ".join([comment for score, comment in x[-n_comments:]])
+                    ) 
                 
             for idx, row in tqdm(data.iterrows(), total = len(data), desc = target):
                 
@@ -187,6 +228,8 @@ for exp_name, config in dict_experiments.items():
                 polarity = row["Polarity"]
                 polarity = 1 if polarity == 'for' else 0
                 
+                
+                
                 if not is_multi_text:
                 
                     prompt_formated = prompt_template.format(
@@ -194,8 +237,6 @@ for exp_name, config in dict_experiments.items():
                     text = text)
                     
                 else: 
-                    
-                    n_comments = config['n_comments']
                     
                     # create list with comments and get the firt n comments
                     try:
@@ -236,8 +277,16 @@ for exp_name, config in dict_experiments.items():
                 
             df_responses['target'] = target
             
+            if is_multi_text:
+                df_responses['n_comments'] = n_comments
+                
+            df_responses['prompt_name'] = prompt_name
+            df_responses['estimator_name'] = estimator_name
+            df_responses['exp_name'] = exp_name
+            
+            
             list_df_responses.append(df_responses)
             
         df_results_final = pd.concat(list_df_responses)   
 
-        df_results_final.to_csv(f'{reports_path}test_results/{estimator_name}_{exp_name}_{prompt_name}_classification_report.csv')
+        df_results_final.to_csv(f'{reports_path}test_results/{estimator_name}_{exp_name}_{prompt_name}_test_results.csv')

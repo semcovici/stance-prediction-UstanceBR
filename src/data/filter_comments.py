@@ -148,7 +148,10 @@ def find_relevant_comments(comments, terms_list, L=None):
     #str_rel_comments = ' # '.join(sorted_com) if sorted_com else ''
     return sorted_score_com
 
-splits = ["train", "test"]
+splits = [
+    "test",
+    "train" 
+    ]
 datasets = {
     "users": {
         "path_input_format":path_processed_data + 'r3_{target}_{split}_users_processed.csv', 
@@ -182,10 +185,7 @@ for dataset_name, config in datasets.items():
         
         dict_splits = {}
 
-        for split in [
-            "train", 
-            "test"
-            ]:
+        for split in splits:
             
             print(f'# {split}')
         
@@ -204,13 +204,23 @@ for dataset_name, config in datasets.items():
             
             data[new_col] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list))
             
-            data.to_csv(path_output_normal,index = False)
+            data.to_csv(
+                path_output_normal,
+                sep = ';', 
+                encoding='utf-8-sig',
+                index = False
+                )
             
             
             data_L = data.copy()
             data_L[config['text_col'] + f"_L={L}"] = data_L[new_col].progress_apply(lambda x: " # ".join([comment for score, comment in x[-L:]])) 
             
-            data_L.to_csv(path_output_L, index = False)
+            data_L.to_csv(
+                path_output_L, 
+                sep = ';', 
+                encoding='utf-8-sig',
+                index = False
+                )
             
             
             
