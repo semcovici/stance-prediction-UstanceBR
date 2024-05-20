@@ -7,6 +7,9 @@ from tqdm import tqdm
 from ast import literal_eval
 tqdm.pandas()
 
+import os
+
+
 from sklearn.metrics import classification_report, precision_score, f1_score
 
 import sys
@@ -95,20 +98,6 @@ dict_experiments = {
     #     "n_comments": 10,
     #     "file_format": file_format_users_filtered
     # },
-    'Texts': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 30,
-        "file_format": file_format_tmt
-    },
-    'Timeline': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 30,
-        "file_format": file_format_users
-    },
     'Stance': {
         "text_col": 'Stance',
         "prompts_to_test": ['prompt2_Stance'],
@@ -164,11 +153,17 @@ def get_prompt(prompt_name):
 
 for exp_name, config in dict_experiments.items():
     
+    print(f"""####################################  
+# Running {exp_name}
+#####################################""")
+    
+    
     # get configs of experiments
     text_col = config['text_col']
     prompts_to_test = config['prompts_to_test']
     is_multi_text = config['is_multi_text']
     file_format = config['file_format']
+    
     
     data_list = []
     for target in target_list:
@@ -185,6 +180,13 @@ for exp_name, config in dict_experiments.items():
 
     # test all prompts
     for prompt_name in prompts_to_test:
+        
+        output_file = f'{reports_path}test_results/{estimator_name}_{exp_name}_{prompt_name}_test_results.csv'
+        
+        
+        if os.path.isfile(output_file):
+            print('# experiment already done')
+            continue
         
         # get prompt template from file
         prompt_template = get_prompt(prompt_name)
