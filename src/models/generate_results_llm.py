@@ -56,6 +56,37 @@ file_format_tmt_filtered = processed_data_path + 'test_r3_{target}_top_mentioned
 
 dict_experiments = {
     
+    'filtered_Texts40': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 40,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline40': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 40,
+        "file_format": file_format_users_filtered
+    },    
+
+    
+    'filtered_Texts30': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline30': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_users_filtered
+    },
+    
     'filtered_Texts20': {
         "text_col": 'Texts',
         "prompts_to_test": ['prompt2_Texts'],
