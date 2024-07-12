@@ -25,8 +25,7 @@ from data.lambdas import int_to_label, label_to_int
 raw_data_path = 'data/raw/'
 processed_data_path = 'data/processed/'
 reports_path = 'reports/'
-file_format_users_filtered = processed_data_path + 'r3_{target}_{split}_users_scored_Timeline.csv' 
-file_format_tmt_filtered = processed_data_path + '{split}_r3_{target}_top_mentioned_timelines_scored_Texts.csv'
+file_format_users_filtered = processed_data_path + 'r3_{target}_{split}_users_processed.csv' 
 
 # Target list
 target_list = [
