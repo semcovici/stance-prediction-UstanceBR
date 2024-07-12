@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 import torch
+from torch.nn.functional import softmax
 from ast import literal_eval
 from tqdm import tqdm
 from sklearn.metrics import classification_report
@@ -11,11 +12,19 @@ import random
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
 random.seed(0)
 from belt_nlp.bert_with_pooling import BertClassifierWithPooling
+from torch.nn.functional import softmax
+
+import sys
+
+sys.path.append("src/")
+from models.classification_methods import create_test_results_df
+from data.lambdas import int_to_label, label_to_int
+
 
 # Define paths
-raw_data_path = '../data/raw/'
-processed_data_path = '../data/processed/'
-reports_path = '../reports/'
+raw_data_path = 'data/raw/'
+processed_data_path = 'data/processed/'
+reports_path = 'reports/'
 file_format_users_filtered = processed_data_path + 'r3_{target}_{split}_users_scored_Timeline.csv' 
 file_format_tmt_filtered = processed_data_path + '{split}_r3_{target}_top_mentioned_timelines_scored_Texts.csv'
 
@@ -42,6 +51,7 @@ def tokenize_function(examples):
 # Verificar se a GPU está disponível e definir o dispositivo
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
+
 # Processar cada target
 for target in target_list:
     print(f"""
@@ -57,7 +67,11 @@ for target in target_list:
         encoding='utf-8-sig'
     ).reset_index()[['Stance', 'Polarity']].rename(columns={'Stance': 'text', 'Polarity': 'label'})
     
-    train_val.label = train_val.label.map({"against": 0, "for": 1})
+    train_val.label = train_val.label.apply(lambda x: label_to_int(x))
+
+    # check if label is binary
+    if len(train_val.label.unique()) != 2:
+        raise Exception("There is an error in train_val label transformation: expected to be binary")
     
     train, val = train_test_split(train_val, test_size=0.15, random_state=42)
     train.reset_index(drop=True, inplace=True)
@@ -69,8 +83,11 @@ for target in target_list:
         encoding='utf-8-sig'
     ).reset_index()[['Stance', 'Polarity']].rename(columns={'Stance': 'text', 'Polarity': 'label'})
     
-    test.label = test.label.map({"against": 0, "for": 1})
+    test.label = test.label.apply(lambda x: label_to_int(x))
 
+    # check if label is binary
+    if len(test.label.unique()) != 2:
+        raise Exception("There is an error in test label transformation: expected to be binary")
     
     # Criar datasets do Hugging Face
     train_dataset = Dataset.from_pandas(train)
@@ -121,6 +138,28 @@ for target in target_list:
     test_predictions = trainer.predict(test_dataset=tokenized_datasets['test'])
     test_pred_labels = np.argmax(test_predictions.predictions, axis=1)
 
-    # Imprimir o classification report
-    print(f"Classification Report for {target}:\n")
-    print(classification_report(test['label'], test_pred_labels, target_names=['against', 'for']))
+    # get logits
+    test_pred_logits = test_predictions.predictions
+    # transform logits in "probabilities"
+    test_pred_probs = softmax(torch.tensor(test_pred_logits), dim=-1).numpy()
+
+    # create list of proba of each class
+    pred_proba_0 = [float(probas[0]) for probas in test_pred_probs]
+    pred_proba_1 = [float(probas[1]) for probas in test_pred_probs]
+
+    # create list of test and prediction
+    y_test = test['label'].tolist()
+    y_pred = test_pred_labels.tolist()
+
+    # format test and pred
+    y_test_formated = [int_to_label(test) for test in y_test]
+    y_pred_formated = [int_to_label(pred) for pred in y_pred]
+
+    # create df with results
+    df_test_results = create_test_results_df(y_test_formated, y_pred_formated, pred_proba_0, pred_proba_1)
+    
+    str_cols = "Stance"
+    estimator_name = "bert_classifier_" + model_name.replace("/","_").replace("-","_")
+    test_results_path = f"{reports_path}test_results/{estimator_name}_{target}_{str_cols}_test_results.csv"
+    
+    df_test_results.to_csv(test_results_path, index=False)

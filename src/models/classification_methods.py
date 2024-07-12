@@ -21,6 +21,76 @@ from joblib import Parallel, delayed
 from sklearn.feature_selection import SelectPercentile
 
 
+import pandas as pd
+
+def create_test_results_df(
+    y_test: list, 
+    y_pred: list, 
+    y_pred_proba_0: list,
+    y_pred_proba_1: list
+) -> pd.DataFrame:
+    """
+    Creates a DataFrame from test results.
+
+    This function receives four lists: y_test, y_pred, y_pred_proba_0, and y_pred_proba_1.
+    It performs multiple checks to ensure that the DataFrame is correctly formatted:
+        1. Verifies that all inputs are lists.
+        2. Ensures that y_test and y_pred are lists of strings.
+        3. Ensures that y_pred_proba_0 and y_pred_proba_1 are lists of floats.
+        4. Checks for any null values in the resulting DataFrame.
+    
+    Args:
+        y_test (list): List of true values (expected to be strings).
+        y_pred (list): List of predicted values (expected to be strings).
+        y_pred_proba_0 (list): List of predicted probabilities for class 0 (expected to be floats).
+        y_pred_proba_1 (list): List of predicted probabilities for class 1 (expected to be floats).
+    
+    Returns:
+        pd.DataFrame: A DataFrame containing the test results.
+    
+    Raises:
+        TypeError: If any of the inputs are not lists or do not contain the expected types.
+        Exception: If there are any null values in the resulting DataFrame.
+    """
+    
+    # Check if all function arguments are lists
+    if not isinstance(y_test, list):
+        raise TypeError(f"The argument y_test is not a list. Found type: {type(y_test).__name__}")
+    if not isinstance(y_pred, list):
+        raise TypeError(f"The argument y_pred is not a list. Found type: {type(y_pred).__name__}")
+    if not isinstance(y_pred_proba_0, list):
+        raise TypeError(f"The argument y_pred_proba_0 is not a list. Found type: {type(y_pred_proba_0).__name__}")
+    if not isinstance(y_pred_proba_1, list):
+        raise TypeError(f"The argument y_pred_proba_1 is not a list. Found type: {type(y_pred_proba_1).__name__}")
+    
+    # Check if y_test and y_pred are lists of strings
+    if not all(isinstance(item, str) for item in y_test):
+        raise TypeError("The elements of y_test are not all strings")
+    if not all(isinstance(item, str) for item in y_pred):
+        raise TypeError("The elements of y_pred are not all strings")
+    
+    # Check if y_pred_proba_0 and y_pred_proba_1 are lists of floats
+    if not all(isinstance(item, float) for item in y_pred_proba_0):
+        raise TypeError("The elements of y_pred_proba_0 are not all floats")
+    if not all(isinstance(item, float) for item in y_pred_proba_1):
+        raise TypeError("The elements of y_pred_proba_1 are not all floats")
+    
+    # Create the DataFrame
+    df_test_results = pd.DataFrame({
+        'test': y_test,
+        'pred': y_pred,
+        'pred_proba_0': y_pred_proba_0,
+        'pred_proba_1': y_pred_proba_1    
+    })
+    
+    # Check for any null values in the DataFrame
+    if df_test_results.isna().sum().sum() != 0:
+        raise Exception("There are null values in the data")
+    
+    return df_test_results
+
+
+
 def get_classification_report(y_test, y_pred, cr_args = {}):
     '''Source: https://stackoverflow.com/questions/39662398/scikit-learn-output-metrics-classification-report-into-csv-tab-delimited-format'''
     report = classification_report(y_test, y_pred, output_dict=True, **cr_args)
