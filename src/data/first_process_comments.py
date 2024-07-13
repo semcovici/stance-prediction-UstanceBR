@@ -25,16 +25,19 @@ for split in ['train', 'test']:
         'gl',
         'ig',
         'lu'
-    ]):
+    ], disable = True):
         
         for dataset, text_cols in [
             ('{split}_r3_{target}_top_mentioned_timelines', ['Texts']),
             ('r3_{target}_{split}_users', ['Timeline', 'Stance'])
         ]:
-            
 
+            
+            path = path_raw_data + dataset.format(split = split, target = target) + ".csv"
+            print("################################")
+            print(f'Running: {path}')
             data = pd.read_csv(
-                path_raw_data + dataset.format(split = split, target = target) + ".csv", 
+                path, 
                 sep = ';', 
                 encoding='utf-8-sig'
                 )            
@@ -56,8 +59,15 @@ for split in ['train', 'test']:
                 for text_col in text_cols:
                     # remove na comments from train
                     ## in test will have 'na', this is expected and the model will be random in this cases.
+                    print(f"Removing 'na' from {text_col}")
+                    print(f"    - Before removing shape", data_filtered.shape)
                     data_filtered = data_filtered[~(data_filtered[text_col] == 'na')]
-                
+                    print(f"    - After removing shape", data_filtered.shape)
+                    
             data_filtered.to_csv(
                 path_processed_data + dataset.format(split = split, target = target) + "_processed.csv",
                 sep = ';', encoding='utf-8-sig')
+            
+            print("################################")
+            print('\n')
+            
