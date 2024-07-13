@@ -27,9 +27,9 @@ for split in ['train', 'test']:
         'lu'
     ]):
         
-        for dataset, text_col in [
-            ('{split}_r3_{target}_top_mentioned_timelines', 'Texts'),
-            ('r3_{target}_{split}_users', 'Timeline')
+        for dataset, text_cols in [
+            ('{split}_r3_{target}_top_mentioned_timelines', ['Texts']),
+            ('r3_{target}_{split}_users', ['Timeline', 'Stance'])
         ]:
             
 
@@ -44,16 +44,19 @@ for split in ['train', 'test']:
             # train and test process
             ####################
             
-            # ommit @ of users
-            data_filtered[text_col] = data_filtered[text_col].apply(omit_usernames)
+            for text_col in text_cols:
+                # ommit @ of users
+                data_filtered[text_col] = data_filtered[text_col].apply(omit_usernames)
             
             ####################
             # only train process
             ####################
             if split == 'train':
-
-                # remove na comments from train
-                data_filtered = data_filtered[~(data_filtered[text_col] == 'na')]
+                
+                for text_col in text_cols:
+                    # remove na comments from train
+                    ## in test will have 'na', this is expected and the model will be random in this cases.
+                    data_filtered = data_filtered[~(data_filtered[text_col] == 'na')]
                 
             data_filtered.to_csv(
                 path_processed_data + dataset.format(split = split, target = target) + "_processed.csv",
