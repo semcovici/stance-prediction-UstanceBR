@@ -54,11 +54,13 @@ Configuration:
               ''')
         
         if dataset == 'top_mentioned_timelines':
-            path_data_input = path_raw_data + f'{split}_r3_{target}_top_mentioned_timelines.csv'
+            #path_data_input = path_raw_data + f'{split}_r3_{target}_top_mentioned_timelines.csv'
+            path_data_input = path_processed_data + f'{split}_r3_{target}_top_mentioned_timelines_processed.csv'
             path_data_output = path_processed_data + f'{split}_r3_{target}_top_mentioned_timelines_{model_name.replace("/", "_")}.parquet'
             texts_cols = ['Texts']
         if dataset == 'users':
-            path_data_input = path_raw_data + f'r3_{target}_{split}_users.csv'
+            #path_data_input = path_raw_data + f'r3_{target}_{split}_users.csv'
+            path_data_input = path_processed_data + f'r3_{target}_{split}_users_processed.csv'
             path_data_output = path_processed_data + f'r3_{target}_{split}_users_{model_name.replace("/", "_")}.parquet'
             texts_cols = ['Timeline', 'Stance']
         

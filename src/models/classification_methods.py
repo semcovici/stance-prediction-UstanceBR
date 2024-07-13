@@ -20,6 +20,10 @@ from joblib_progress import joblib_progress
 from joblib import Parallel, delayed
 from sklearn.feature_selection import SelectPercentile
 
+import sys
+sys.path.append('src/')
+from data.lambdas import int_to_label, label_to_int
+
 
 import pandas as pd
 
@@ -75,6 +79,15 @@ def create_test_results_df(
     if not all(isinstance(item, float) for item in y_pred_proba_1):
         raise TypeError("The elements of y_pred_proba_1 are not all floats")
     
+    # Check if the number of labels is ok
+    possible_labels = ['against','for']
+    check_labels_test = [False if t in possible_labels else True for t in y_test]
+    check_labels_pred = [False if t in possible_labels else True for t in y_pred]
+    if sum(check_labels_test) != 0:
+        raise Exception(f"The labels are wrong: {set(y_test)}")
+    if sum(check_labels_pred) != 0:
+        raise Exception(f"The labels are wrong: {set(y_pred)}")
+    
     # Create the DataFrame
     df_test_results = pd.DataFrame({
         'test': y_test,
@@ -86,6 +99,8 @@ def create_test_results_df(
     # Check for any null values in the DataFrame
     if df_test_results.isna().sum().sum() != 0:
         raise Exception("There are null values in the data")
+        
+
     
     return df_test_results
 
@@ -140,33 +155,28 @@ def generate_results(data_tuples_list, corpus_name, X_col, clf, reports_path, es
     if estimator_name is None:
         estimator_name = clf["estimator"].__class__.__name__
 
-    df_cr, df_test_results = process_classification(
+    list_results = process_classification(
         **clf,
         data_tuples=data_tuples_list,
         X_cols=X_col,
     )
     
+    # create str_cols (name of coluns for file_paths)
     match = re.search(r'(\w+)_emb', X_col[0])
-    
     if match is None:
-
         str_cols = "_".join(X_col)
-        df_cr['preprocessing'] = clf['preprocessing']
-        
     else: 
-        
         str_cols = match.group(1)
-        df_cr['preprocessing'] ='emb'
+        
+    for target, df_test_results in list_results:
 
-    cr_path = f"{reports_path}classification_reports/{estimator_name}_{corpus_name}_{str_cols}_classification_report.csv"
-    test_results_path = f"{reports_path}test_results/{estimator_name}_{corpus_name}_{str_cols}_test_results.csv"
+        test_results_path = f"{reports_path}test_results/{estimator_name}_{target}_{corpus_name}_{str_cols}_test_results.csv"
+        
+        print("results in ", test_results_path)
+        
+        df_test_results.to_csv(test_results_path, index = False)
 
-    df_cr['estimator'] = clf['estimator']
-
-    df_cr.to_csv(cr_path)
-    df_test_results.to_csv(test_results_path)
-
-    return df_cr, df_test_results
+    return True
 
 def process_classification(
         estimator,
@@ -179,23 +189,17 @@ def process_classification(
         y_col = 'Polarity'
 ):
     
-    df_cr = pd.DataFrame({})
-    df_test_results = pd.DataFrame({})
+    list_results = []
 
     for data_train, data_test, target in data_tuples:
         
+        gc.collect()
+        
         X_train = data_train[X_cols].squeeze()
-        y_train = data_train[y_col]
+        y_train = data_train[y_col].apply(lambda x: label_to_int(x))
         
         X_test = data_test[X_cols].squeeze()
-        y_test = data_test[y_col]
-        
-        le = LabelEncoder()
-        le_trained = le.fit(y_train)
-        
-        y_train_enc = le_trained.transform(y_train)
-        y_test_enc = le_trained.transform(y_test)
-        
+        y_test = data_test[y_col].apply(lambda x: label_to_int(x))
         
         if estimator.__class__.__name__ == 'DummyClassifier':
             preprocessing = None
@@ -213,32 +217,28 @@ def process_classification(
         
         pipe = IMBPipeline(steps,verbose = False)
 
-        pipe.fit(X_train, y_train_enc)
+        pipe.fit(X_train, y_train)
         y_pred = pipe.predict(X_test)
         
         try:
             y_pred_proba = pipe.predict_proba(X_test).tolist()
         except Exception as e:
             y_pred_proba = None
+            
+            
+        # create df test results
+        ## format test and pred
+        y_test_formated = [int_to_label(test) for test in y_test]
+        y_pred_formated = [int_to_label(pred) for pred in y_pred]
+        ## create list of proba of each class
+        pred_proba_0 = [float(probas[0]) for probas in y_pred_proba]
+        pred_proba_1 = [float(probas[1]) for probas in y_pred_proba]
+        ## create df with results
+        df_test_results = create_test_results_df(y_test_formated, y_pred_formated, pred_proba_0, pred_proba_1)
+            
+        list_results.append((target, df_test_results))
         
-        
-        df_classification_report = get_classification_report(y_test_enc, y_pred)
-        
-        df_classification_report = df_classification_report.reset_index().rename(columns = {"index": "class"})
-        
-        df_classification_report['corpus'] = target 
-
-        df_cr = pd.concat([df_cr, df_classification_report])
-        df_test_results = pd.concat([
-            df_test_results,
-            pd.DataFrame({
-                'test':[list(y_test)],
-                'pred':[list(y_pred)],
-                'pred_proba': [y_pred_proba]    
-            })
-            ])
-        
-        del X_train, y_train, X_test, y_test, y_train_enc, y_test_enc        
+           
         gc.collect()
         
-    return df_cr, df_test_results
+    return list_results
