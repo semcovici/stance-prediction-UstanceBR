@@ -257,12 +257,6 @@ for exp_name, config in dict_experiments.items():
         # get prompt template from file
         prompt_template = get_prompt(prompt_name)
 
-        dict_responses = {}
-        list_results = [] 
-        list_df_responses = []
-        input_list = []
-        output_list = [] 
-
         for target in target_list:
             
             target_original = target
@@ -287,6 +281,8 @@ for exp_name, config in dict_experiments.items():
             list_polarity_pred = []
             pred_proba_0 = []
             pred_proba_1 = []
+            input_list = []
+            output_list = [] 
             list_message = []
             for idx, row in tqdm(data.iterrows(), total = len(data), desc = target):
                 
