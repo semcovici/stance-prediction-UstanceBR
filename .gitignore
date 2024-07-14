@@ -4,6 +4,7 @@
 *.part
 *.npy
 llama3_local/
+reports/
 
 data/interim/*
 data/processed/*
