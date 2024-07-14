@@ -57,100 +57,105 @@ file_format_tmt_filtered = processed_data_path + 'test_r3_{target}_top_mentioned
 
 dict_experiments = {
     
-    # 'filtered_Texts40': {
-    #     "text_col": 'Texts',
-    #     "prompts_to_test": ['prompt2_Texts'],
-    #     "is_multi_text": True,
-    #     "n_comments": 40,
-    #     "file_format": file_format_tmt_filtered
-    # },
-    # 'filteredTimeline40': {
-    #     "text_col": 'Timeline',
-    #     "prompts_to_test": ['prompt2_Timeline'],
-    #     "is_multi_text": True,
-    #     "n_comments": 40,
-    #     "file_format": file_format_users_filtered
-    # },    
-
-    
-    # 'filtered_Texts30': {
-    #     "text_col": 'Texts',
-    #     "prompts_to_test": ['prompt2_Texts'],
-    #     "is_multi_text": True,
-    #     "n_comments": 30,
-    #     "file_format": file_format_tmt_filtered
-    # },
-    # 'filteredTimeline30': {
-    #     "text_col": 'Timeline',
-    #     "prompts_to_test": ['prompt2_Timeline'],
-    #     "is_multi_text": True,
-    #     "n_comments": 30,
-    #     "file_format": file_format_users_filtered
-    # },
-    
-    # 'filtered_Texts20': {
-    #     "text_col": 'Texts',
-    #     "prompts_to_test": ['prompt2_Texts'],
-    #     "is_multi_text": True,
-    #     "n_comments": 20,
-    #     "file_format": file_format_tmt_filtered
-    # },
-    # 'filteredTimeline20': {
-    #     "text_col": 'Timeline',
-    #     "prompts_to_test": ['prompt2_Timeline'],
-    #     "is_multi_text": True,
-    #     "n_comments": 20,
-    #     "file_format": file_format_users_filtered
-    # },
-    # 'filtered_Texts15': {
-    #     "text_col": 'Texts',
-    #     "prompts_to_test": ['prompt2_Texts'],
-    #     "is_multi_text": True,
-    #     "n_comments": 15,
-    #     "file_format": file_format_tmt_filtered
-    # },
-    # 'filteredTimeline15': {
-    #     "text_col": 'Timeline',
-    #     "prompts_to_test": ['prompt2_Timeline'],
-    #     "is_multi_text": True,
-    #     "n_comments": 15,
-    #     "file_format": file_format_users_filtered
-    # },
-    
-    # 'filtered_Texts5': {
-    #     "text_col": 'Texts',
-    #     "prompts_to_test": ['prompt2_Texts'],
-    #     "is_multi_text": True,
-    #     "n_comments": 5,
-    #     "file_format": file_format_tmt_filtered
-    # },
-    # 'filteredTimeline5': {
-    #     "text_col": 'Timeline',
-    #     "prompts_to_test": ['prompt2_Timeline'],
-    #     "is_multi_text": True,
-    #     "n_comments": 5,
-    #     "file_format": file_format_users_filtered
-    # },
-    # 'filtered_Texts10': {
-    #     "text_col": 'Texts',
-    #     "prompts_to_test": ['prompt2_Texts'],
-    #     "is_multi_text": True,
-    #     "n_comments": 10,
-    #     "file_format": file_format_tmt_filtered
-    # },
-    # 'filteredTimeline10': {
-    #     "text_col": 'Timeline',
-    #     "prompts_to_test": ['prompt2_Timeline'],
-    #     "is_multi_text": True,
-    #     "n_comments": 10,
-    #     "file_format": file_format_users_filtered
-    # },
     'Stance': {
         "text_col": 'Stance',
         "prompts_to_test": ['prompt2_Stance'],
         "is_multi_text": False,
         "file_format": file_format_users
+    },
+    
+    'filtered_Texts5': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 5,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline5': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 5,
+        "file_format": file_format_users_filtered
+    },
+    'filtered_Texts10': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 10,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline10': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 10,
+        "file_format": file_format_users_filtered
+    },
+    
+    'filtered_Texts15': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 15,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline15': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 15,
+        "file_format": file_format_users_filtered
+    },
+    
+    'filtered_Texts20': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 20,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline20': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 20,
+        "file_format": file_format_users_filtered
+    },
+
+    
+    'filtered_Texts30': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline30': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 30,
+        "file_format": file_format_users_filtered
+    },
+    
+
+    
+    'filtered_Texts40': {
+        "text_col": 'Texts',
+        "prompts_to_test": ['prompt2_Texts'],
+        "is_multi_text": True,
+        "n_comments": 40,
+        "file_format": file_format_tmt_filtered
+    },
+    'filteredTimeline40': {
+        "text_col": 'Timeline',
+        "prompts_to_test": ['prompt2_Timeline'],
+        "is_multi_text": True,
+        "n_comments": 40,
+        "file_format": file_format_users_filtered
     }
+
 }
 
 #############################
@@ -203,7 +208,7 @@ def get_prompt(prompt_name):
     return prompt_template 
 
 
-check_if_already_exists = False
+check_if_already_exists = True
 
 print("Creating dict with majority polarity in train")
 dict_majority = {}
@@ -249,25 +254,27 @@ for exp_name, config in dict_experiments.items():
     # test all prompts
     for prompt_name in prompts_to_test:
         
-        output_file = f'{reports_path}test_results/{estimator_name}_{exp_name}_{prompt_name}_test_results.csv'
-        
-        
-        if os.path.isfile(output_file) and check_if_already_exists:
-            print('# experiment already done')
-            continue
-        
         # get prompt template from file
         prompt_template = get_prompt(prompt_name)
 
         dict_responses = {}
-
         list_results = [] 
-
-        list_df_responses = [] 
+        list_df_responses = []
+        input_list = []
+        output_list = [] 
 
         for target in target_list:
             
-            data = test_df[test_df['target'] == target]  
+            target_original = target
+            
+            output_file = f'{reports_path}test_results/{estimator_name}_{target_original}_{exp_name}_{prompt_name}_test_results.csv'
+            
+            
+            if os.path.isfile(output_file) and check_if_already_exists:
+                print('# experiment already done')
+                continue
+            
+            data = test_df[test_df['target'] == target]
                                     
             # if is multi_text, filter only the best n comments
             if is_multi_text:
@@ -284,7 +291,7 @@ for exp_name, config in dict_experiments.items():
             for idx, row in tqdm(data.iterrows(), total = len(data), desc = target):
                 
                 text = row[text_col]
-                target_id = target
+                
                 target = dict_cp.get(row['target'])
                 polarity = row["Polarity"]
                 polarity = 1 if polarity == 'for' else 0
@@ -318,8 +325,9 @@ for exp_name, config in dict_experiments.items():
                     target = target,
                     text = texts)
                     
-                
+                input_list.append(prompt_formated)
                 response_full = get_response_from_llm(prompt_formated)
+                output_list.append(response_full)
                 
                 message, response, y_pred = format_response(response_full, target)
                 
@@ -361,5 +369,9 @@ for exp_name, config in dict_experiments.items():
                 )
             
             df_test_results['message'] = list_message 
+            df_test_results['input'] = input_list 
+            df_test_results['output'] = output_list 
             
-            df_test_results.to_csv(f'{reports_path}test_results/{estimator_name}_{target}_{exp_name}_{prompt_name}_test_results.csv', index = False)
+            print("Results in ", output_file)
+            
+            df_test_results.to_csv(output_file, index = False)
