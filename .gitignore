@@ -1,6 +1,6 @@
 *.parquet
-# *.csv
-# *.xlsx
+*.csv
+*.xlsx
 *.part
 *.npy
 llama3_local/
