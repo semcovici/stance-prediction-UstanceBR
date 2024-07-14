@@ -14,7 +14,8 @@ from sklearn.metrics import classification_report, precision_score, f1_score
 
 import sys
 sys.path.append('src/')
-from models.classification_methods import get_classification_report
+from models.classification_methods import get_classification_report,create_test_results_df
+from data.lambdas import int_to_label, label_to_int
 
 #############################
 # Definitions
@@ -56,94 +57,94 @@ file_format_tmt_filtered = processed_data_path + 'test_r3_{target}_top_mentioned
 
 dict_experiments = {
     
-    'filtered_Texts40': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 40,
-        "file_format": file_format_tmt_filtered
-    },
-    'filteredTimeline40': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 40,
-        "file_format": file_format_users_filtered
-    },    
+    # 'filtered_Texts40': {
+    #     "text_col": 'Texts',
+    #     "prompts_to_test": ['prompt2_Texts'],
+    #     "is_multi_text": True,
+    #     "n_comments": 40,
+    #     "file_format": file_format_tmt_filtered
+    # },
+    # 'filteredTimeline40': {
+    #     "text_col": 'Timeline',
+    #     "prompts_to_test": ['prompt2_Timeline'],
+    #     "is_multi_text": True,
+    #     "n_comments": 40,
+    #     "file_format": file_format_users_filtered
+    # },    
 
     
-    'filtered_Texts30': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 30,
-        "file_format": file_format_tmt_filtered
-    },
-    'filteredTimeline30': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 30,
-        "file_format": file_format_users_filtered
-    },
+    # 'filtered_Texts30': {
+    #     "text_col": 'Texts',
+    #     "prompts_to_test": ['prompt2_Texts'],
+    #     "is_multi_text": True,
+    #     "n_comments": 30,
+    #     "file_format": file_format_tmt_filtered
+    # },
+    # 'filteredTimeline30': {
+    #     "text_col": 'Timeline',
+    #     "prompts_to_test": ['prompt2_Timeline'],
+    #     "is_multi_text": True,
+    #     "n_comments": 30,
+    #     "file_format": file_format_users_filtered
+    # },
     
-    'filtered_Texts20': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 20,
-        "file_format": file_format_tmt_filtered
-    },
-    'filteredTimeline20': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 20,
-        "file_format": file_format_users_filtered
-    },
-    'filtered_Texts15': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 15,
-        "file_format": file_format_tmt_filtered
-    },
-    'filteredTimeline15': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 15,
-        "file_format": file_format_users_filtered
-    },
+    # 'filtered_Texts20': {
+    #     "text_col": 'Texts',
+    #     "prompts_to_test": ['prompt2_Texts'],
+    #     "is_multi_text": True,
+    #     "n_comments": 20,
+    #     "file_format": file_format_tmt_filtered
+    # },
+    # 'filteredTimeline20': {
+    #     "text_col": 'Timeline',
+    #     "prompts_to_test": ['prompt2_Timeline'],
+    #     "is_multi_text": True,
+    #     "n_comments": 20,
+    #     "file_format": file_format_users_filtered
+    # },
+    # 'filtered_Texts15': {
+    #     "text_col": 'Texts',
+    #     "prompts_to_test": ['prompt2_Texts'],
+    #     "is_multi_text": True,
+    #     "n_comments": 15,
+    #     "file_format": file_format_tmt_filtered
+    # },
+    # 'filteredTimeline15': {
+    #     "text_col": 'Timeline',
+    #     "prompts_to_test": ['prompt2_Timeline'],
+    #     "is_multi_text": True,
+    #     "n_comments": 15,
+    #     "file_format": file_format_users_filtered
+    # },
     
-    'filtered_Texts5': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 5,
-        "file_format": file_format_tmt_filtered
-    },
-    'filteredTimeline5': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 5,
-        "file_format": file_format_users_filtered
-    },
-    'filtered_Texts10': {
-        "text_col": 'Texts',
-        "prompts_to_test": ['prompt2_Texts'],
-        "is_multi_text": True,
-        "n_comments": 10,
-        "file_format": file_format_tmt_filtered
-    },
-    'filteredTimeline10': {
-        "text_col": 'Timeline',
-        "prompts_to_test": ['prompt2_Timeline'],
-        "is_multi_text": True,
-        "n_comments": 10,
-        "file_format": file_format_users_filtered
-    },
+    # 'filtered_Texts5': {
+    #     "text_col": 'Texts',
+    #     "prompts_to_test": ['prompt2_Texts'],
+    #     "is_multi_text": True,
+    #     "n_comments": 5,
+    #     "file_format": file_format_tmt_filtered
+    # },
+    # 'filteredTimeline5': {
+    #     "text_col": 'Timeline',
+    #     "prompts_to_test": ['prompt2_Timeline'],
+    #     "is_multi_text": True,
+    #     "n_comments": 5,
+    #     "file_format": file_format_users_filtered
+    # },
+    # 'filtered_Texts10': {
+    #     "text_col": 'Texts',
+    #     "prompts_to_test": ['prompt2_Texts'],
+    #     "is_multi_text": True,
+    #     "n_comments": 10,
+    #     "file_format": file_format_tmt_filtered
+    # },
+    # 'filteredTimeline10': {
+    #     "text_col": 'Timeline',
+    #     "prompts_to_test": ['prompt2_Timeline'],
+    #     "is_multi_text": True,
+    #     "n_comments": 10,
+    #     "file_format": file_format_users_filtered
+    # },
     'Stance': {
         "text_col": 'Stance',
         "prompts_to_test": ['prompt2_Stance'],
@@ -156,12 +157,22 @@ dict_experiments = {
 # Aux Functions
 #############################
 def get_response_from_llm(prompt):
-    response_full = ollama.generate(model=estimator_name, prompt = prompt, options = {'seed': random_seed})
+    response_full = ollama.generate(
+        model=estimator_name, 
+        prompt = prompt, 
+        options = {
+            'seed': random_seed,
+            'temperature': 0,
+            "num_gpu": 1,
+            "main_gpu": 0,
+            }
+        )
     return response_full
 
 
 def format_response(
     response,
+    target,
     threshold = 0.5
     ):
     
@@ -177,9 +188,11 @@ def format_response(
             y_pred = 1
             
     except Exception as e:
-        y_pred = None 
         
-    return message, y_pred
+        # when get an error, the prediction is the most common in train
+        y_pred = dict_majority[target]
+        
+    return message, response, y_pred
 
 def get_prompt(prompt_name):
     
@@ -190,13 +203,22 @@ def get_prompt(prompt_name):
     return prompt_template 
 
 
+check_if_already_exists = False
+
+print("Creating dict with majority polarity in train")
+dict_majority = {}
+for target in tqdm(target_list):
+    
+    df = pd.read_csv( f"data/raw/r3_{target}_train_users.csv", sep = ';', encoding='utf-8-sig')
+    majority = label_to_int(df.Polarity.value_counts().idxmax())
+    dict_majority.update({target:majority})
+
+
 
 
 #############################
 # Process
 #############################
-
-
 for exp_name, config in dict_experiments.items():
     
     print(f"""####################################  
@@ -230,7 +252,7 @@ for exp_name, config in dict_experiments.items():
         output_file = f'{reports_path}test_results/{estimator_name}_{exp_name}_{prompt_name}_test_results.csv'
         
         
-        if os.path.isfile(output_file):
+        if os.path.isfile(output_file) and check_if_already_exists:
             print('# experiment already done')
             continue
         
@@ -244,30 +266,21 @@ for exp_name, config in dict_experiments.items():
         list_df_responses = [] 
 
         for target in target_list:
-
-            df_responses = pd.DataFrame({
-                "idx":[],
-                "text":[],
-                "target":[],
-                "y_test":[],
-                "y_pred":[],
-                "justification":[],
-                "complete_response": []
-            })
             
-            data = test_df[test_df['target'] == target]    
+            data = test_df[test_df['target'] == target]  
                                     
             # if is multi_text, filter only the best n comments
             if is_multi_text:
-                                
+                n_comments = config['n_comments'] 
                 data[f'comments_and_scores_{text_col}'] = data[f'comments_and_scores_{text_col}'].progress_apply(lambda x: literal_eval(x))
-                
-                n_comments = config['n_comments']
-                
                 data[text_col] = data[f'comments_and_scores_{text_col}'].progress_apply(
                     lambda x: " # ".join([comment for score, comment in x[-n_comments:]])
                     ) 
-                
+            
+            list_polarity_pred = []
+            pred_proba_0 = []
+            pred_proba_1 = []
+            list_message = []
             for idx, row in tqdm(data.iterrows(), total = len(data), desc = target):
                 
                 text = row[text_col]
@@ -275,7 +288,6 @@ for exp_name, config in dict_experiments.items():
                 target = dict_cp.get(row['target'])
                 polarity = row["Polarity"]
                 polarity = 1 if polarity == 'for' else 0
-                
                 
                 
                 if not is_multi_text:
@@ -309,32 +321,45 @@ for exp_name, config in dict_experiments.items():
                 
                 response_full = get_response_from_llm(prompt_formated)
                 
-                message, y_pred = format_response(response_full)
-
-                new_row = {
-                "idx": idx,
-                "text":text,
-                "target":target,
-                "y_test": polarity,
-                "y_pred":y_pred,
-                "complete_response": message
+                message, response, y_pred = format_response(response_full, target)
                 
-                }
+                # create probas
+                if y_pred is not None:
+                    if y_pred == 0:
+                        proba_0 = response
+                        proba_1 = 1 - response
+                    elif y_pred == 1:
+                        proba_1 = response
+                        proba_0 = 1 - response
+                    else:
+                        raise Exception("Erro")
+                    
+                else:
+                    proba_1 = -1
+                    proba_0 = -1
+                    
+                list_message.append(message)
+                list_polarity_pred.append(y_pred)
                 
-                df_responses.loc[len(df_responses)] = new_row
+                pred_proba_0.append(float(proba_0))
+                pred_proba_1.append(float(proba_1))
                 
-            df_responses['target'] = target
             
-            if is_multi_text:
-                df_responses['n_comments'] = n_comments
-                
-            df_responses['prompt_name'] = prompt_name
-            df_responses['estimator_name'] = estimator_name
-            df_responses['exp_name'] = exp_name
+            y_test = data['Polarity'].apply(lambda x: label_to_int(x)).tolist()
             
             
-            list_df_responses.append(df_responses)
+            # format test and pred
+            y_test_formated = [int_to_label(test) for test in y_test]
+            y_pred_formated = [int_to_label(pred) for pred in list_polarity_pred]
             
-        df_results_final = pd.concat(list_df_responses)   
-
-        df_results_final.to_csv(f'{reports_path}test_results/{estimator_name}_{exp_name}_{prompt_name}_test_results.csv')
+            # create df with results
+            df_test_results = create_test_results_df(
+                y_test_formated, 
+                y_pred_formated, 
+                pred_proba_0, 
+                pred_proba_1
+                )
+            
+            df_test_results['message'] = list_message 
+            
+            df_test_results.to_csv(f'{reports_path}test_results/{estimator_name}_{target}_{exp_name}_{prompt_name}_test_results.csv', index = False)
