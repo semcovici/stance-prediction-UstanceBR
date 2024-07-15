@@ -192,12 +192,24 @@ def format_response(
         else:
             y_pred = 1
             
+        # create probas
+        if y_pred == 0:
+            proba_0 = response
+            proba_1 = 1 - response
+        elif y_pred == 1:
+            proba_1 = response
+            proba_0 = 1 - response
+        else:
+            raise Exception("Erro")
+            
     except Exception as e:
         
         # when get an error, the prediction is the most common in train
         y_pred = dict_majority[target]
+        proba_1 = -1
+        proba_0 = -1
         
-    return message, response, y_pred
+    return message, response, y_pred, proba_0, proba_1
 
 def get_prompt(prompt_name):
     
@@ -325,22 +337,9 @@ for exp_name, config in dict_experiments.items():
                 response_full = get_response_from_llm(prompt_formated)
                 output_list.append(response_full)
                 
-                message, response, y_pred = format_response(response_full, target)
+                message, response, y_pred, proba_0, proba_1 = format_response(response_full, target_original)
                 
-                # create probas
-                if y_pred is not None:
-                    if y_pred == 0:
-                        proba_0 = response
-                        proba_1 = 1 - response
-                    elif y_pred == 1:
-                        proba_1 = response
-                        proba_0 = 1 - response
-                    else:
-                        raise Exception("Erro")
-                    
-                else:
-                    proba_1 = -1
-                    proba_0 = -1
+
                     
                 list_message.append(message)
                 list_polarity_pred.append(y_pred)
