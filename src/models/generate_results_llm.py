@@ -51,7 +51,6 @@ dict_cp = {
 
 file_format_users = raw_data_path +'r3_{target}_test_users.csv'
 file_format_users_filtered = processed_data_path + 'r3_{target}_test_users_scored_Timeline.csv' 
-file_format_tmt = raw_data_path +'test_r3_{target}_top_mentioned_timelines.csv'
 file_format_tmt_filtered = processed_data_path + 'test_r3_{target}_top_mentioned_timelines_scored_Texts.csv'
 
 
