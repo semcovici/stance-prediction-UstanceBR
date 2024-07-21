@@ -5,6 +5,9 @@
 *.npy
 llama3_local/
 reports/
+bert_training_results/
+results/
+
 
 data/interim/*
 data/processed/*

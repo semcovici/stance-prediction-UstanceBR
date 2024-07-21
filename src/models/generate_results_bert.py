@@ -6,21 +6,24 @@ from torch.nn.functional import softmax
 from ast import literal_eval
 from tqdm import tqdm
 from sklearn.metrics import classification_report
-tqdm.pandas()
 from transformers import AutoTokenizer, AutoModel
 import random
+from transformers import set_seed, TrainerCallback
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-random.seed(0)
 from belt_nlp.bert_with_pooling import BertClassifierWithPooling
 from torch.nn.functional import softmax
 from transformers import BertTokenizer, BertForSequenceClassification, Trainer, TrainingArguments
 from datasets import Dataset, DatasetDict
 import sys
 import os
+import csv
 sys.path.append("src/")
 from models.classification_methods import create_test_results_df
 from data.lambdas import int_to_label, label_to_int
 
+tqdm.pandas()
+random.seed(0)
+set_seed(42)
 
 # Define paths
 raw_data_path = 'data/raw/'
@@ -48,12 +51,11 @@ model_name = "pablocosta/bertabaporu-base-uncased"
 # Função para tokenizar os dados
 def tokenize_function(examples):
     
-    if text_col == 'Stance':
-        # resultados de stance estao com esse, nao alterar antes de atualizar
-        return tokenizer(examples['text'], padding='max_length', max_length = 512)
+    if exp_name == "Stance":
+        return tokenizer(examples['text'], padding='max_length', truncation=True)
     else:
-        return tokenizer(examples['text'], padding='max_length' , max_length = 512, truncation = True)
-    
+        return tokenizer(examples['text'], padding='max_length', truncation=True, max_length=512)    
+
 # Verificar se a GPU está disponível e definir o dispositivo
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -64,14 +66,23 @@ dict_exps = {
     "Stance": {
         'path_dataset': file_format_users,
         "text_col": "Stance",
+        "batch_size": 16,
+        "epochs": 3,
+        "pre_tokenize": False
     },
     "Timeline": {
         'path_dataset': file_format_users,
         "text_col": "Timeline",
+        "batch_size": 2,
+        "epochs": 3,
+        "pre_tokenize": True
     },
     "Texts": {
         'path_dataset': file_format_tmt,
         "text_col": "Texts",
+        "batch_size": 2,
+        "epochs": 3,
+        "pre_tokenize": True
     },
 }
 
@@ -90,6 +101,22 @@ def pre_tokenize(string, n_tokens):
         return new_string
     else:
         raise Exception("erro")
+    
+class SaveMetricsCallback(TrainerCallback):
+    def __init__(self, log_dir):
+        self.log_dir = log_dir
+        os.makedirs(log_dir, exist_ok=True)
+        self.log_file = os.path.join(log_dir, "training_metrics.csv")
+        with open(self.log_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["epoch", "step", "metric", "value"])
+
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        if logs:
+            with open(self.log_file, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                for key, value in logs.items():
+                    writer.writerow([state.epoch, state.global_step, key, value])
 
 
 
@@ -110,7 +137,7 @@ for exp_name, config in dict_exps.items():
         print(f"""######## target: {target}""")
         estimator_name = "bert_classifier_" + model_name.replace("/","_").replace("-","_")
         test_results_path = f"{reports_path}test_results/{estimator_name}_{target}_{text_col}_test_results.csv"
-
+        train_results_path = f"{reports_path}train_results/{estimator_name}_{target}_{text_col}_train_results.csv"
         
         if os.path.isfile(test_results_path) and check_if_already_exists:
             print('# experiment already done')
@@ -159,12 +186,7 @@ for exp_name, config in dict_exps.items():
         val_dataset = Dataset.from_pandas(val)
         test_dataset = Dataset.from_pandas(test)
         
-       
-        
-        
-        
-        
-        
+
         # Tokenizar os datasets
         tokenizer = BertTokenizer.from_pretrained(model_name)
         tokenized_datasets = DatasetDict({
@@ -176,17 +198,25 @@ for exp_name, config in dict_exps.items():
         # Carregar o modelo e mover para o dispositivo (GPU se disponível)
         model = BertForSequenceClassification.from_pretrained(model_name, num_labels=2).to(device)
 
+        batch_size = config['batch_size']
+        epochs = config['epochs']
+        
+        log_dir = f'./bert_training_logs/{exp_name}_{target}'
+
         # Definir os argumentos de treinamento
         training_args = TrainingArguments(
-            output_dir=f'./results/{target}',
+            output_dir=f'./bert_training_results/{exp_name}_{target}',
             evaluation_strategy="epoch",
+            save_strategy="epoch",
             learning_rate=2e-5,
-            per_device_train_batch_size=16,
-            per_device_eval_batch_size=16,
-            num_train_epochs=3,
+            per_device_train_batch_size=batch_size,
+            per_device_eval_batch_size=batch_size,
+            num_train_epochs=epochs,
             weight_decay=0.01,
-            logging_dir=f'./logs/{target}',
+            logging_dir=log_dir,
             logging_steps=10,
+            load_best_model_at_end=True,
+            report_to="all"
         )
 
         # Definir o Trainer
@@ -196,6 +226,7 @@ for exp_name, config in dict_exps.items():
             train_dataset=tokenized_datasets['train'],
             eval_dataset=tokenized_datasets['val'],
             tokenizer=tokenizer,
+            callbacks=[SaveMetricsCallback(log_dir=log_dir)]
         )
 
         # Treinar o modelo
@@ -209,24 +240,39 @@ for exp_name, config in dict_exps.items():
         test_predictions = trainer.predict(test_dataset=tokenized_datasets['test'])
         test_pred_labels = np.argmax(test_predictions.predictions, axis=1)
 
+        # Predição no conjunto de treino
+        train_predictions = trainer.predict(test_dataset=tokenized_datasets['train'])
+        train_pred_labels = np.argmax(train_predictions.predictions, axis=1)
+
         # get logits
         test_pred_logits = test_predictions.predictions
+        train_pred_logits = train_predictions.predictions
+
         # transform logits in "probabilities"
         test_pred_probs = softmax(torch.tensor(test_pred_logits), dim=-1).numpy()
+        train_pred_probs = softmax(torch.tensor(train_pred_logits), dim=-1).numpy()
 
         # create list of proba of each class
-        pred_proba_0 = [float(probas[0]) for probas in test_pred_probs]
-        pred_proba_1 = [float(probas[1]) for probas in test_pred_probs]
+        test_proba_0 = [float(probas[0]) for probas in test_pred_probs]
+        test_proba_1 = [float(probas[1]) for probas in test_pred_probs]
+        train_proba_0 = [float(probas[0]) for probas in train_pred_probs]
+        train_proba_1 = [float(probas[1]) for probas in train_pred_probs]
 
         # create list of test and prediction
         y_test = test['label'].tolist()
-        y_pred = test_pred_labels.tolist()
+        y_train = train['label'].tolist()
+        y_test_pred = test_pred_labels.tolist()
+        y_train_pred = train_pred_labels.tolist()
 
         # format test and pred
         y_test_formated = [int_to_label(test) for test in y_test]
-        y_pred_formated = [int_to_label(pred) for pred in y_pred]
+        y_train_formated = [int_to_label(train) for train in y_train]
+        y_test_pred_formated = [int_to_label(pred) for pred in y_test_pred]
+        y_train_pred_formated = [int_to_label(pred) for pred in y_train_pred]
 
         # create df with results
-        df_test_results = create_test_results_df(y_test_formated, y_pred_formated, pred_proba_0, pred_proba_1)
-        
+        df_test_results = create_test_results_df(y_test_formated, y_test_pred_formated, test_proba_0, test_proba_1)
+        df_train_results = create_test_results_df(y_train_formated, y_train_pred_formated, train_proba_0, train_proba_1)
+
         df_test_results.to_csv(test_results_path, index=False)
+        df_train_results.to_csv(train_results_path, index=False)
