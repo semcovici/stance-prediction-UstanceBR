@@ -31,6 +31,8 @@ processed_data_path = 'data/processed/'
 reports_path = 'reports/'
 file_format_tmt = processed_data_path + "{split}_r3_{target}_top_mentioned_timelines_processed.csv"
 file_format_users = processed_data_path + 'r3_{target}_{split}_users_processed.csv' 
+file_format_users_scored = processed_data_path + 'r3_{target}_{split}_users_scored_Timeline.csv' 
+file_format_tmt_scored = processed_data_path + '{split}_r3_{target}_top_mentioned_timelines_scored_Texts.csv'
 
 # Target list
 target_list = [
@@ -84,6 +86,20 @@ dict_exps = {
         "epochs": 3,
         "pre_tokenize": True
     },
+    "scored_Timeline": {
+        'path_dataset': file_format_users_scored,
+        "text_col": "Timeline",
+        "batch_size": 2,
+        "epochs": 3,
+        "pre_tokenize": True
+    },
+    "scored_Texts": {
+        'path_dataset': file_format_tmt_scored,
+        "text_col": "Texts",
+        "batch_size": 2,
+        "epochs": 3,
+        "pre_tokenize": True
+    }
 }
 
 check_if_already_exists = True
@@ -136,14 +152,12 @@ for exp_name, config in dict_exps.items():
         
         print(f"""######## target: {target}""")
         estimator_name = "bert_classifier_" + model_name.replace("/","_").replace("-","_")
-        test_results_path = f"{reports_path}test_results/{estimator_name}_{target}_{text_col}_test_results.csv"
-        train_results_path = f"{reports_path}train_results/{estimator_name}_{target}_{text_col}_train_results.csv"
+        test_results_path = f"{reports_path}test_results/{estimator_name}_{target}_{exp_name}_test_results.csv"
+        train_results_path = f"{reports_path}train_results/{estimator_name}_{target}_{exp_name}_train_results.csv"
         
         if os.path.isfile(test_results_path) and check_if_already_exists:
             print('# experiment already done')
             continue
-        
-        
         
         # Ler e dividir os dados
         train_val = pd.read_csv(
@@ -173,7 +187,7 @@ for exp_name, config in dict_exps.items():
         # check if label is binary
         if len(test.label.unique()) != 2:
             raise Exception("There is an error in test label transformation: expected to be binary")
-        
+                
         # pre tokenizacao (tirar o grosso dos tokens antes de jogar no modelo) - util pra quando tem colunas com textos MUITO longos
         train.text = train.text.apply(lambda x: pre_tokenize(x, n_tokens = 2000))
         test.text = test.text.apply(lambda x: pre_tokenize(x, n_tokens = 2000))

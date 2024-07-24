@@ -200,9 +200,18 @@ for dataset_name, config in datasets.items():
                 encoding='utf-8-sig'
             )
             
+            text_col = config['text_col']
+            
             new_col = f'comments_and_scores_{config['text_col']}'
             
             data[new_col] = data[config['text_col']].progress_apply(lambda x: find_relevant_comments(x, terms_list))
+            
+            
+            data[text_col + '_original'] = data[text_col]             
+            data[text_col] = data[f'comments_and_scores_{text_col}'].progress_apply(
+                lambda x: " # ".join([comment for score, comment in x[::-1]])
+                ) 
+            
             
             data.to_csv(
                 path_output_normal,
