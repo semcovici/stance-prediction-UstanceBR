@@ -168,13 +168,19 @@ def generate_results(data_tuples_list, corpus_name, X_col, clf, reports_path, es
     else: 
         str_cols = match.group(1)
         
-    for target, df_test_results in list_results:
+    for target, df_train_results, df_test_results in list_results:
 
         test_results_path = f"{reports_path}test_results/{estimator_name}_{target}_{corpus_name}_{str_cols}_test_results.csv"
         
         print("results in ", test_results_path)
         
         df_test_results.to_csv(test_results_path, index = False)
+        
+        train_results_path = f"{reports_path}train_results/{estimator_name}_{target}_{corpus_name}_{str_cols}_train_results.csv"
+        
+        print("results in ", train_results_path)
+        
+        df_train_results.to_csv(train_results_path, index = False)
 
     return True
 
@@ -219,9 +225,11 @@ def process_classification(
 
         pipe.fit(X_train, y_train)
         y_pred = pipe.predict(X_test)
+        y_pred_train = pipe.predict(X_train)
         
         try:
             y_pred_proba = pipe.predict_proba(X_test).tolist()
+            y_pred_proba_train = pipe.predict_proba(X_train).tolist()
         except Exception as e:
             y_pred_proba = None
             
@@ -230,13 +238,20 @@ def process_classification(
         ## format test and pred
         y_test_formated = [int_to_label(test) for test in y_test]
         y_pred_formated = [int_to_label(pred) for pred in y_pred]
+        y_train_formated = [int_to_label(test) for test in y_train]
+        y_pred_train_formated = [int_to_label(pred) for pred in y_pred_train]
+        
         ## create list of proba of each class
         pred_proba_0 = [float(probas[0]) for probas in y_pred_proba]
         pred_proba_1 = [float(probas[1]) for probas in y_pred_proba]
+        pred_proba_train_0 = [float(probas[0]) for probas in y_pred_proba_train]
+        pred_proba_train_1 = [float(probas[1]) for probas in y_pred_proba_train]
+        
         ## create df with results
         df_test_results = create_test_results_df(y_test_formated, y_pred_formated, pred_proba_0, pred_proba_1)
+        df_train_results = create_test_results_df(y_train_formated, y_pred_train_formated, pred_proba_train_0, pred_proba_train_1)
             
-        list_results.append((target, df_test_results))
+        list_results.append((target, df_train_results, df_test_results))
         
            
         gc.collect()
