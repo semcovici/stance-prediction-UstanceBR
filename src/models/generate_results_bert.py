@@ -36,8 +36,8 @@ file_format_tmt_scored = processed_data_path + '{split}_r3_{target}_top_mentione
 
 # Target list
 target_list = [
-    'ig',
-    'bo', 
+    # 'ig',
+    # 'bo', 
     'cl', 
     'co', 
     'gl', 
@@ -102,7 +102,7 @@ dict_exps = {
     }
 }
 
-check_if_already_exists = True
+check_if_already_exists = False
 
 def pre_tokenize(string, n_tokens):
     
@@ -154,6 +154,9 @@ for exp_name, config in dict_exps.items():
         estimator_name = "bert_classifier_" + model_name.replace("/","_").replace("-","_")
         test_results_path = f"{reports_path}test_results/{estimator_name}_{target}_{exp_name}_test_results.csv"
         train_results_path = f"{reports_path}train_results/{estimator_name}_{target}_{exp_name}_train_results.csv"
+        val_results_path = f"{reports_path}val_results/{estimator_name}_{target}_{exp_name}_val_results.csv"
+
+        
         
         if os.path.isfile(test_results_path) and check_if_already_exists:
             print('# experiment already done')
@@ -173,6 +176,8 @@ for exp_name, config in dict_exps.items():
             raise Exception("There is an error in train_val label transformation: expected to be binary")
         
         train, val = train_test_split(train_val, test_size=0.15, random_state=42)
+        train_index = train.index
+        val_index = val.index
         train.reset_index(drop=True, inplace=True)
         val.reset_index(drop=True, inplace=True)
         
@@ -257,36 +262,56 @@ for exp_name, config in dict_exps.items():
         # Predição no conjunto de treino
         train_predictions = trainer.predict(test_dataset=tokenized_datasets['train'])
         train_pred_labels = np.argmax(train_predictions.predictions, axis=1)
+        
+        # Predição no conjunto de validação
+        val_predictions = trainer.predict(test_dataset=tokenized_datasets['val'])
+        val_pred_labels = np.argmax(val_predictions.predictions, axis=1)
 
         # get logits
         test_pred_logits = test_predictions.predictions
         train_pred_logits = train_predictions.predictions
+        val_pred_logits = val_predictions.predictions
 
         # transform logits in "probabilities"
         test_pred_probs = softmax(torch.tensor(test_pred_logits), dim=-1).numpy()
         train_pred_probs = softmax(torch.tensor(train_pred_logits), dim=-1).numpy()
+        val_pred_probs = softmax(torch.tensor(val_pred_logits), dim=-1).numpy()
 
         # create list of proba of each class
         test_proba_0 = [float(probas[0]) for probas in test_pred_probs]
         test_proba_1 = [float(probas[1]) for probas in test_pred_probs]
         train_proba_0 = [float(probas[0]) for probas in train_pred_probs]
         train_proba_1 = [float(probas[1]) for probas in train_pred_probs]
+        val_proba_0 = [float(probas[0]) for probas in val_pred_probs]
+        val_proba_1 = [float(probas[1]) for probas in val_pred_probs]
 
-        # create list of test and prediction
+        # create list of test, validation and prediction
         y_test = test['label'].tolist()
         y_train = train['label'].tolist()
+        y_val = val['label'].tolist()
         y_test_pred = test_pred_labels.tolist()
         y_train_pred = train_pred_labels.tolist()
+        y_val_pred = val_pred_labels.tolist()
 
-        # format test and pred
+        # format test, validation and pred
         y_test_formated = [int_to_label(test) for test in y_test]
         y_train_formated = [int_to_label(train) for train in y_train]
+        y_val_formated = [int_to_label(val) for val in y_val]
         y_test_pred_formated = [int_to_label(pred) for pred in y_test_pred]
         y_train_pred_formated = [int_to_label(pred) for pred in y_train_pred]
+        y_val_pred_formated = [int_to_label(pred) for pred in y_val_pred]
 
         # create df with results
         df_test_results = create_test_results_df(y_test_formated, y_test_pred_formated, test_proba_0, test_proba_1)
         df_train_results = create_test_results_df(y_train_formated, y_train_pred_formated, train_proba_0, train_proba_1)
+        df_val_results = create_test_results_df(y_val_formated, y_val_pred_formated, val_proba_0, val_proba_1)
+        
+        df_train_results.index = train_index
+        df_val_results.index = val_index
+        
+        df_train_or = pd.concat([df_train_results, df_val_results])
+        df_train_or.sort_index(inplace=True)
 
         df_test_results.to_csv(test_results_path, index=False)
-        df_train_results.to_csv(train_results_path, index=False)
+        df_train_or.to_csv(train_results_path, index=False)
+        #df_val_results.to_csv(val_results_path, index=False)
