@@ -38,9 +38,9 @@ file_format_tmt_scored = processed_data_path + '{split}_r3_{target}_top_mentione
 target_list = [
     # 'ig',
     # 'bo', 
-    'cl', 
-    'co', 
-    'gl', 
+    # 'cl', 
+    # 'co', 
+    # 'gl', 
     'lu'
 ]
 
@@ -65,27 +65,27 @@ print(device)
 
 
 dict_exps = {
-    "Stance": {
-        'path_dataset': file_format_users,
-        "text_col": "Stance",
-        "batch_size": 16,
-        "epochs": 3,
-        "pre_tokenize": False
-    },
-    "Timeline": {
-        'path_dataset': file_format_users,
-        "text_col": "Timeline",
-        "batch_size": 2,
-        "epochs": 3,
-        "pre_tokenize": True
-    },
-    "Texts": {
-        'path_dataset': file_format_tmt,
-        "text_col": "Texts",
-        "batch_size": 2,
-        "epochs": 3,
-        "pre_tokenize": True
-    },
+    # "Stance": {
+    #     'path_dataset': file_format_users,
+    #     "text_col": "Stance",
+    #     "batch_size": 16,
+    #     "epochs": 3,
+    #     "pre_tokenize": False
+    # },
+    # "Timeline": {
+    #     'path_dataset': file_format_users,
+    #     "text_col": "Timeline",
+    #     "batch_size": 2,
+    #     "epochs": 3,
+    #     "pre_tokenize": True
+    # },
+    # "Texts": {
+    #     'path_dataset': file_format_tmt,
+    #     "text_col": "Texts",
+    #     "batch_size": 2,
+    #     "epochs": 3,
+    #     "pre_tokenize": True
+    # },
     "scored_Timeline": {
         'path_dataset': file_format_users_scored,
         "text_col": "Timeline",
@@ -93,13 +93,13 @@ dict_exps = {
         "epochs": 3,
         "pre_tokenize": True
     },
-    "scored_Texts": {
-        'path_dataset': file_format_tmt_scored,
-        "text_col": "Texts",
-        "batch_size": 2,
-        "epochs": 3,
-        "pre_tokenize": True
-    }
+    # "scored_Texts": {
+    #     'path_dataset': file_format_tmt_scored,
+    #     "text_col": "Texts",
+    #     "batch_size": 2,
+    #     "epochs": 3,
+    #     "pre_tokenize": True
+    # }
 }
 
 check_if_already_exists = False
@@ -158,7 +158,7 @@ for exp_name, config in dict_exps.items():
 
         
         
-        if os.path.isfile(test_results_path) and check_if_already_exists:
+        if os.path.isfile(test_results_path) and os.path.isfile(train_results_path) and check_if_already_exists:
             print('# experiment already done')
             continue
         
