@@ -44,8 +44,8 @@ def process_and_merge_data(target, split):
     # create column with texts and timeline concateneted
     data["concat_Texts_Timeline"] = data.Texts + " # " + data.Timeline
 
-    output_file_path = os.path.join(PATH_PROCESSED_DATA, f"unified_processed_df_{target}_processed.csv")
-    data.to_csv(output_file_path, index=False)
+    output_file_path = os.path.join(PATH_PROCESSED_DATA, f"{split}_unified_processed_df_{target}_processed.csv")
+    data.to_csv(output_file_path, sep=';', encoding='utf-8-sig', index=False)
     logging.info(f"Saved unified data to {output_file_path}")
 
 def main():
