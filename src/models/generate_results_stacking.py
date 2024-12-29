@@ -262,12 +262,21 @@ def perform_model_search(X_train, y_train, X_test, y_test, comb, results_path, t
 
 my_list = [
     'Texts', 'Timeline', 'Texts',
-     'BoM', "BoF", "BoFr"
-    ]
+    'BoM', 'BoF', 'BoFr'
+]
+
+# Remove duplicados mantendo a ordem
+unique_my_list = []
+seen = set()
+for item in my_list:
+    if item not in seen:
+        unique_my_list.append(item)
+        seen.add(item)
 
 all_combinations = []
-for r in range(2, len(my_list) + 1):
-    all_combinations.extend(list(itertools.combinations(my_list, r)))
+for r in range(2, len(unique_my_list) + 1):
+    all_combinations.extend(itertools.combinations(unique_my_list, r))
+
 
 print('All combinations: \n', all_combinations)
 
