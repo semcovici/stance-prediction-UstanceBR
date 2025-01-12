@@ -261,7 +261,7 @@ def perform_model_search(X_train, y_train, X_test, y_test, comb, results_path, t
 
 
 my_list = [
-    'Texts', 'Timeline', 'Texts',
+    'Stance','Texts', 'Timeline', 'Texts',
     'BoM', 'BoF', 'BoFr'
 ]
 
